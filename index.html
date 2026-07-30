@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOSS | Busan Ocean Safety System</title>
+  <style>
+    :root { --sky: #dff5ff; --blue: #1777a8; --ink: #111827; --white: #fff; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: var(--sky); color: var(--ink); font-family: Arial, "Malgun Gothic", sans-serif; }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    .screen { display: none; min-height: 100vh; padding: 28px 20px 40px; }
+    .screen.active { display: flex; flex-direction: column; align-items: center; }
+    .home-content { width: min(100%, 720px); text-align: center; }
+    .eyebrow { margin: 18px 0 8px; font-size: 0.92rem; font-weight: 700; letter-spacing: 0.05em; }
+    h1 { margin: 0; font-size: clamp(2rem, 8vw, 4.4rem); line-height: 1.05; }
+    .boss { color: var(--blue); }
+    .subtitle { margin: 14px auto 28px; font-size: clamp(1rem, 3.8vw, 1.3rem); line-height: 1.55; }
+    .map-preview { height: 310px; overflow: hidden; border: 3px solid var(--ink); border-radius: 26px; background: #a8d8ec; box-shadow: 8px 8px 0 var(--ink); }
+    .map-preview iframe { width: 100%; height: 100%; border: 0; }
+    .map-label { margin: 18px 0; font-size: 0.9rem; font-weight: 700; }
+    .choice-buttons { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
+    .choice { min-height: 98px; padding: 16px; border: 3px solid var(--ink); border-radius: 20px; background: var(--white); font-size: clamp(1rem, 3.8vw, 1.25rem); font-weight: 800; box-shadow: 5px 5px 0 var(--ink); transition: transform .15s, box-shadow .15s; }
+    .choice:hover, .choice:focus-visible { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink); outline: none; }
+    .choice span { display: block; margin-top: 6px; font-size: .78em; font-weight: 500; }
+    .placeholder { width: min(100%, 620px); margin: auto; padding: 38px 24px; border: 3px solid var(--ink); border-radius: 26px; background: var(--white); text-align: center; box-shadow: 8px 8px 0 var(--ink); }
+    .placeholder h2 { margin-top: 0; font-size: 2rem; }
+    .back { align-self: flex-start; margin-bottom: 28px; padding: 10px 14px; border: 2px solid var(--ink); border-radius: 12px; background: var(--white); font-weight: 700; }
+    .map-layout { width: min(100%, 1180px); }
+    .map-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
+    .map-header h2 { margin: 0; font-size: clamp(1.45rem, 4vw, 2rem); }
+    .map-controls { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+    .filter { min-height: 42px; padding: 8px 13px; border: 2px solid var(--ink); border-radius: 11px; background: var(--white); font-weight: 800; }
+    .filter.active { background: var(--blue); color: var(--white); }
+    #beach-select { min-height: 42px; max-width: 130px; padding: 7px; border: 2px solid var(--ink); border-radius: 11px; background: var(--white); font: inherit; font-weight: 700; }
+    .map-shell { overflow: hidden; border: 3px solid var(--ink); border-radius: 22px; background: var(--white); box-shadow: 7px 7px 0 var(--ink); }
+    #safety-map { height: min(62vh, 590px); min-height: 370px; }
+    .map-info { margin-top: 16px; padding: 18px; border: 3px solid var(--ink); border-radius: 18px; background: var(--white); }
+    .map-info h3 { margin: 0 0 10px; font-size: 1.25rem; }
+    .map-info p { margin: 7px 0; line-height: 1.5; }
+    .summary { padding: 10px 12px; border-radius: 12px; background: #e9f8ff; font-weight: 700; }
+    .prediction { margin-top: 12px; padding: 13px; border: 2px solid var(--ink); border-radius: 12px; background: #f7fcff; }
+    .prediction strong { font-size: 1.1rem; }
+    .prediction ul { margin: 9px 0 0; padding-left: 20px; line-height: 1.55; }
+    .legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; font-size: .9rem; font-weight: 700; }
+    .legend span::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: 5px; border: 1px solid var(--ink); border-radius: 50%; vertical-align: -1px; }
+    .safe::before { background: #32a852; } .caution::before { background: #f4c542; } .danger::before { background: #e34b4b; }
+    .data-note { margin-bottom: 0 !important; font-size: .85rem; color: #374151; }
+    .leaflet-container { font-family: Arial, "Malgun Gothic", sans-serif; }
+    .beach-label { background: #fff !important; border: 2px solid #111827 !important; border-radius: 8px !important; color: #111827 !important; font-weight: 800; box-shadow: none !important; }
+    .beach-label::before { display: none; }
+    .fog-label { border: 2px solid #334155 !important; border-radius: 8px !important; background: #f8fafc !important; color: #0f172a !important; font-weight: 800; box-shadow: none !important; }
+    .fog-label::before { display: none; }
+    .fog-arrow { background: transparent !important; border: 0 !important; color: #334155; font-size: 2rem; font-weight: 900; text-align: center; text-shadow: 0 1px 0 #fff; }
+    .lens-layout { width: min(100%, 760px); text-align: center; }
+    .lens-layout h2 { margin: 0 0 10px; font-size: clamp(1.7rem, 5vw, 2.4rem); }
+    .lens-layout > p { margin: 0 auto 22px; line-height: 1.55; }
+    .upload-card { display: grid; place-items: center; min-height: 390px; padding: 22px; border: 3px dashed var(--ink); border-radius: 24px; background: var(--white); box-shadow: 7px 7px 0 var(--ink); }
+    .camera-icon { font-size: 4.5rem; }
+    .upload-card h3 { margin: 8px 0; font-size: 1.4rem; }
+    .upload-card p { margin: 0 0 18px; line-height: 1.5; }
+    .upload-button { display: inline-block; padding: 15px 20px; border: 3px solid var(--ink); border-radius: 14px; background: #62c4eb; font-weight: 800; box-shadow: 4px 4px 0 var(--ink); cursor: pointer; }
+    #jellyfish-photo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .photo-preview { display: none; width: min(100%, 430px); max-height: 350px; margin: 0 auto 14px; border: 3px solid var(--ink); border-radius: 16px; object-fit: contain; background: #eefaff; }
+    .photo-preview.visible { display: block; }
+    .privacy-note { font-size: .85rem; color: #374151; }
+    .result-card { width: min(100%, 980px); padding: 22px; border: 3px solid var(--ink); border-radius: 24px; background: var(--white); box-shadow: 7px 7px 0 var(--ink); }
+    .result-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 24px; align-items: start; }
+    .result-card .photo-preview { display: block; width: 100%; max-height: 430px; margin: 0; }
+    .result-label { margin: 0 0 6px; font-size: .95rem; font-weight: 800; color: #075985; }
+    .result-card h2 { margin: 0 0 12px; font-size: clamp(1.6rem, 5vw, 2.3rem); }
+    .result-card h3 { margin: 18px 0 6px; font-size: 1.05rem; }
+    .result-card p { margin: 0; line-height: 1.6; }
+    #species-name { font-size: 1.4rem; font-weight: 800; }
+    .model-status { padding: 12px; border-radius: 12px; background: #e9f8ff; font-weight: 700; }
+    .safety-box { margin-top: 18px; padding: 14px; border: 2px solid var(--ink); border-radius: 14px; background: #fff6e6; }
+    @media (max-width: 650px) { .screen { padding: 20px 16px 32px; } .map-preview { height: 280px; } .choice-buttons { grid-template-columns: 1fr; } .map-header { align-items: flex-start; flex-direction: column; } .map-controls { justify-content: flex-start; width: 100%; } #beach-select { max-width: 100%; flex: 1; } #safety-map { min-height: 420px; } .result-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <section id="home" class="screen active" aria-labelledby="home-title">
+      <div class="home-content">
+        <p class="eyebrow">부산 바다 안전 안내</p>
+        <h1 id="home-title"><span class="boss">BOSS</span></h1>
+        <p class="subtitle">Busan Ocean Safety System</p>
+        <div class="map-preview" aria-label="OpenStreetMap 기반 부산 지도 미리보기">
+          <iframe title="부산 지도" src="https://www.openstreetmap.org/export/embed.html?bbox=128.89%2C35.04%2C129.24%2C35.31&amp;layer=mapnik"></iframe>
+        </div>
+        <p class="map-label">OpenStreetMap 기반 부산 지도</p>
+        <div class="choice-buttons">
+          <button class="choice" type="button" data-target="map-screen">지도 기능 선택<span>수질 · 해파리 · 인파 확인</span></button>
+          <button class="choice" type="button" data-target="lens-screen">스마트 렌즈 기능 선택<span>해파리 사진으로 종 알아보기</span></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="map-screen" class="screen" aria-labelledby="map-title">
+      <button class="back" type="button" data-target="home">← 처음 화면</button>
+      <div class="map-layout">
+        <div class="map-header">
+          <h2 id="map-title">부산 해수욕장 안전 지도</h2>
+          <div class="map-controls" aria-label="지도 정보 선택">
+            <button class="filter active" type="button" data-mode="water">수질</button>
+            <button class="filter" type="button" data-mode="jellyfish">해파리</button>
+            <button class="filter" type="button" data-mode="crowd">인파</button>
+            <button class="filter" type="button" data-mode="fog">해무</button>
+            <select id="beach-select" aria-label="해수욕장 선택">
+              <option value="all">전체 해수욕장</option>
+              <option value="haeundae">해운대</option><option value="songjeong">송정</option>
+              <option value="imrang">임랑</option><option value="ilgwang">일광</option>
+              <option value="gwangalli">광안리</option><option value="songdo">송도</option><option value="dadaepo">다대포</option>
+            </select>
+          </div>
+        </div>
+        <div class="map-shell"><div id="safety-map" aria-label="OpenStreetMap 기반 부산 해수욕장 안전 지도"></div></div>
+        <article class="map-info" aria-live="polite">
+          <h3 id="info-title">해운대 수질 정보 · 예시 데이터</h3>
+          <p id="info-detail"></p><p id="info-summary" class="summary"></p>
+          <div id="prediction-box" class="prediction" hidden><strong id="prediction-result"></strong><ul id="prediction-reasons"></ul></div>
+          <div class="legend"><span class="safe">안전</span><span class="caution">주의</span><span class="danger">위험</span></div>
+          <p class="data-note">※ 현재 화면의 수질·해파리·인파 정보와 업데이트 시간은 기능 시연을 위한 예시 데이터입니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="lens-screen" class="screen" aria-labelledby="lens-title">
+      <button class="back" type="button" data-target="home">← 처음 화면</button>
+      <div class="lens-layout">
+        <h2 id="lens-title">스마트 렌즈</h2>
+        <p>해파리 사진을 찍거나 업로드하면 AI 분석 결과 화면으로 이동합니다.</p>
+        <div class="upload-card">
+          <div>
+            <div class="camera-icon" aria-hidden="true">📷</div>
+            <h3>해파리 사진을 올려 주세요</h3>
+            <p>휴대폰에서는 카메라를 열 수 있고,<br>노트북에서는 사진 파일을 선택할 수 있어요.</p>
+            <img id="photo-preview" class="photo-preview" alt="선택한 해파리 사진 미리보기">
+            <label class="upload-button" for="jellyfish-photo">사진 찍기 또는 업로드</label>
+            <input id="jellyfish-photo" type="file" accept="image/*" capture="environment">
+            <p class="privacy-note">사진은 이 기기에서만 미리보기로 사용됩니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="result-screen" class="screen" aria-labelledby="result-title">
+      <button class="back" type="button" data-target="lens-screen">← 사진 다시 선택</button>
+      <div class="result-card">
+        <div class="result-grid">
+          <img id="result-photo" class="photo-preview" alt="업로드한 해파리 사진">
+          <div>
+            <p class="result-label">사진 분류 모델 · 학습 사진 14장 기반</p>
+            <h2 id="result-title">AI 분석 결과</h2>
+            <p id="model-status" class="model-status">사진을 준비하고 있어요.</p>
+            <section id="species-result" hidden>
+              <h3>판단한 종류</h3><p id="species-name"><strong>분석 중</strong></p>
+              <h3>독성 강도(위험도)</h3><p id="species-risk"></p>
+              <h3>사진 유사도</h3><p id="species-score"></p>
+              <h3>특징</h3><p id="species-feature"></p>
+              <div class="safety-box"><strong>안전 안내</strong><p id="species-safety"></p></div>
+              <p class="data-note">특징·위험도 출처: 국립수산과학원 해파리 정보</p>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="model-data.js"></script>
+  <script>
+    document.querySelectorAll('[data-target]').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.screen').forEach((screen) => screen.classList.remove('active'));
+        document.getElementById(button.dataset.target).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+
+    const beaches = {
+      haeundae: { name: '해운대', point: [35.1587, 129.1604], ph: '7.9', bacteria: '낮음', turbidity: '낮음', waterTemp: 24.8, airTemp: 25, humidity: 78, wind: 3.1, condition: '안전', jellyfish: 2, crowd: 68, note: '현재 물놀이를 즐기기 좋은 상태예요.' },
+      songjeong: { name: '송정', point: [35.1780, 129.1995], ph: '7.7', bacteria: '보통', turbidity: '보통', waterTemp: 25.6, airTemp: 24, humidity: 85, wind: 2.0, condition: '주의', jellyfish: 5, crowd: 41, note: '이용 전 현장 안내판을 한 번 확인해 주세요.' },
+      imrang: { name: '임랑', point: [35.3208, 129.2647], ph: '7.5', bacteria: '보통', turbidity: '보통', waterTemp: 24.2, airTemp: 26, humidity: 67, wind: 4.5, condition: '주의', jellyfish: 4, crowd: 22, note: '보통 수준이에요. 어린이는 보호자와 함께 이용해요.' },
+      ilgwang: { name: '일광', point: [35.2638, 129.2338], ph: '7.8', bacteria: '낮음', turbidity: '낮음', waterTemp: 23.7, airTemp: 26, humidity: 70, wind: 5.1, condition: '안전', jellyfish: 1, crowd: 35, note: '현재 비교적 쾌적하게 이용할 수 있어요.' },
+      gwangalli: { name: '광안리', point: [35.1530, 129.1186], ph: '7.6', bacteria: '보통', turbidity: '보통', waterTemp: 25.1, airTemp: 24, humidity: 87, wind: 1.8, condition: '주의', jellyfish: 3, crowd: 88, note: '물놀이는 가능하지만 사람이 많은 편이에요.' },
+      songdo: { name: '송도', point: [35.0773, 129.0201], ph: '7.3', bacteria: '높음', turbidity: '높음', waterTemp: 26.4, airTemp: 25, humidity: 90, wind: 1.5, condition: '위험', jellyfish: 14, crowd: 47, note: '오늘은 입수 전 안전요원의 안내를 꼭 확인해 주세요.' },
+      dadaepo: { name: '다대포', point: [35.0462, 128.9655], ph: '7.9', bacteria: '낮음', turbidity: '낮음', waterTemp: 24.0, airTemp: 27, humidity: 63, wind: 6.0, condition: '안전', jellyfish: 2, crowd: 54, note: '현재 물놀이를 즐기기 좋은 상태예요.' }
+    };
+    const colors = { 안전: '#32a852', 주의: '#f4c542', 위험: '#e34b4b' };
+    let safetyMap, layers = [], currentMode = 'water', selectedBeach = 'all';
+
+    function startMap() {
+      if (safetyMap || !window.L) return;
+      safetyMap = L.map('safety-map', { zoomControl: true }).setView([35.155, 129.115], 11);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' }).addTo(safetyMap);
+      drawMap();
+      setTimeout(() => safetyMap.invalidateSize(), 150);
+    }
+    function clearLayers() { layers.forEach((layer) => safetyMap.removeLayer(layer)); layers = []; }
+    function visibleBeaches() { return selectedBeach === 'all' ? Object.entries(beaches) : [[selectedBeach, beaches[selectedBeach]]]; }
+    function add(layer) { layer.addTo(safetyMap); layers.push(layer); return layer; }
+    function jellyfishForecast(b) {
+      const temperatureFit = Math.max(0, 24 - Math.abs(b.waterTemp - 25) * 8);
+      const turbidityScore = b.turbidity === '높음' ? 15 : b.turbidity === '보통' ? 8 : 2;
+      const waterScore = b.bacteria === '높음' ? 8 : b.bacteria === '보통' ? 4 : 1;
+      const chance = Math.min(95, Math.round(18 + temperatureFit + b.jellyfish * 3 + turbidityScore + waterScore));
+      return { chance, level: chance >= 70 ? '위험' : chance >= 45 ? '주의' : '안전' };
+    }
+    function fogForecast(b) {
+      const temperatureFit = Math.max(0, 16 - Math.abs(b.airTemp - 24) * 4);
+      const windScore = b.wind <= 2.5 ? 16 : b.wind <= 4 ? 8 : 1;
+      const chance = Math.min(95, Math.max(5, Math.round((b.humidity - 45) * 1.25 + temperatureFit + windScore)));
+      return { chance, level: chance >= 70 ? '위험' : chance >= 45 ? '주의' : '안전' };
+    }
+    function fogArrivalTime(b) {
+      const hour = 14 + Math.min(4, Math.max(0, Math.round((90 - b.humidity) / 10)));
+      const today = new Date();
+      return `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일 ${hour}:00`;
+    }
+    function updateInfo(beach) {
+      const b = beaches[beach]; const title = document.getElementById('info-title'); const detail = document.getElementById('info-detail'); const summary = document.getElementById('info-summary');
+      const predictionBox = document.getElementById('prediction-box');
+      predictionBox.hidden = currentMode !== 'jellyfish';
+      if (currentMode === 'water') { title.textContent = `${b.name} 수질 정보 · 예시 데이터`; detail.textContent = `pH ${b.ph} · 세균 위험 ${b.bacteria} · 안전 단계 ${b.condition} · 업데이트 10:30`; summary.textContent = `AI 쉬운 설명(예시): ${b.note}`; }
+      if (currentMode === 'jellyfish') {
+        const forecast = jellyfishForecast(b); const reasons = [];
+        title.textContent = `${b.name} 해파리 정보 · 예시 데이터`;
+        detail.textContent = `현재 관찰 ${b.jellyfish}건 · 수온 ${b.waterTemp}℃ · pH ${b.ph} · 탁도 ${b.turbidity} · 업데이트 10:30`;
+        summary.textContent = `AI 쉬운 설명(예시): ${forecast.level === '위험' ? '앞으로 해파리가 많이 나타날 가능성이 있어요. 입수하지 말고 안전요원 안내를 따라 주세요.' : forecast.level === '주의' ? '해파리 출몰 가능성이 있어요. 바다에 들어가기 전 현장 안내를 확인해 주세요.' : '현재 출몰 가능성은 낮은 편이지만, 바다에서는 주변을 살펴봐 주세요.'}`;
+        if (Math.abs(b.waterTemp - 25) < 2) reasons.push('수온이 예시 계산에서 해파리 활동에 적합한 범위예요.');
+        if (b.jellyfish > 0) reasons.push(`현재 주변 해역에서 ${b.jellyfish}건의 관찰 정보가 있어요.`);
+        reasons.push(`수질 정보(pH ${b.ph}, 탁도 ${b.turbidity})를 함께 반영했어요.`);
+        document.getElementById('prediction-result').textContent = `AI 출몰 가능성(예시): ${forecast.chance}% · ${forecast.level}`;
+        document.getElementById('prediction-reasons').innerHTML = reasons.map((reason) => `<li>${reason}</li>`).join('');
+      }
+      if (currentMode === 'crowd') { title.textContent = `${b.name} 인파 정보 · 예시 데이터`; detail.textContent = `혼잡도 ${b.crowd}% · ${b.crowd >= 75 ? '혼잡' : b.crowd >= 45 ? '보통' : '여유'} · 업데이트 10:30`; summary.textContent = `AI 쉬운 설명(예시): ${b.crowd >= 75 ? '사람이 많아요. 어린이와 함께라면 만날 장소를 미리 정해 두세요.' : '현재 이동하기에 비교적 편한 수준이에요.'}`; }
+      if (currentMode === 'fog') {
+        const forecast = fogForecast(b); const reasons = [];
+        predictionBox.hidden = false; title.textContent = `${b.name} 해무 예측 · 예시 데이터`;
+        detail.textContent = `기온 ${b.airTemp}℃ · 습도 ${b.humidity}% · 바람 ${b.wind}m/s · 업데이트 10:30`;
+        summary.textContent = `AI 쉬운 설명(예시): ${forecast.level === '위험' ? '해무가 생길 가능성이 높아요. 바닷가와 해상 이동 시 시야 확보에 특히 주의해 주세요.' : forecast.level === '주의' ? '해무가 생길 수 있어요. 이동 전 현장 기상 안내를 확인해 주세요.' : '현재 해무 발생 가능성은 낮은 편이에요.'}`;
+        if (b.humidity >= 80) reasons.push('습도가 높아 해무가 생기기 쉬운 조건이에요.');
+        if (b.wind <= 3) reasons.push('바람이 약해 해무가 오래 머무를 수 있어요.');
+        reasons.push(`예상 이동 범위(예시): 앞바다 → ${b.name} 해변 방향 · 예상 도착 ${fogArrivalTime(b)}`);
+        document.getElementById('prediction-result').textContent = `AI 해무 발생 가능성(예시): ${forecast.chance}% · ${forecast.level}`;
+        document.getElementById('prediction-reasons').innerHTML = reasons.map((reason) => `<li>${reason}</li>`).join('');
+      }
+    }
+    function drawMap() {
+      clearLayers(); const shown = visibleBeaches();
+      shown.forEach(([key, b]) => {
+        const jellyRisk = jellyfishForecast(b).level;
+        if (currentMode === 'water') add(L.circle(b.point, { radius: 950, color: colors[b.condition], fillColor: colors[b.condition], fillOpacity: .35, weight: 2 }));
+        if (currentMode === 'jellyfish') {
+          add(L.circle(b.point, { radius: 950, color: colors[jellyRisk], fillColor: colors[jellyRisk], fillOpacity: .38, weight: 2 }));
+          for (let i = 0; i < Math.min(b.jellyfish, 6); i++) add(L.circleMarker([b.point[0] + (i - 2) * .002, b.point[1] + (i % 2) * .003], { radius: 6, color: '#56349c', fillColor: '#9670d8', fillOpacity: 1, weight: 2 }));
+        }
+        if (currentMode === 'crowd') add(L.circleMarker(b.point, { radius: 10 + b.crowd / 4, color: '#1d4ed8', fillColor: '#60a5fa', fillOpacity: .55, weight: 2 }));
+        if (currentMode === 'fog') {
+          const fogRisk = fogForecast(b);
+          const offshore = [b.point[0] - .035, b.point[1] - .045];
+          const middle = [b.point[0] - .012, b.point[1] - .016];
+          const arrowOne = [(offshore[0] + middle[0]) / 2, (offshore[1] + middle[1]) / 2];
+          const arrowTwo = [(middle[0] + b.point[0]) / 2, (middle[1] + b.point[1]) / 2];
+          const arrowAngle = (from, to) => Math.atan2(-(to[0] - from[0]), to[1] - from[1]) * 180 / Math.PI;
+          const arrowIcon = (angle) => L.divIcon({ className: 'fog-arrow', html: `<span style="display:block;transform:rotate(${angle}deg)">➜</span>`, iconSize: [34, 34], iconAnchor: [17, 17] });
+          add(L.polyline([offshore, middle, b.point], { color: '#64748b', weight: 5, opacity: .75, dashArray: '10 12' }));
+          add(L.circle(offshore, { radius: 1200, color: '#94a3b8', fillColor: '#e2e8f0', fillOpacity: .3, weight: 1 }));
+          add(L.marker(offshore).bindTooltip('현재 해무', { permanent: true, direction: 'top', className: 'fog-label', offset: [0, -8] }));
+          add(L.marker(arrowOne, { icon: arrowIcon(arrowAngle(offshore, middle)) }));
+          add(L.marker(arrowTwo, { icon: arrowIcon(arrowAngle(middle, b.point)) }));
+          add(L.marker(b.point).bindTooltip(`예상 도착: ${fogArrivalTime(b)} (예시)`, { permanent: true, direction: 'bottom', className: 'fog-label', offset: [0, 13] }));
+          if (fogRisk.level === '위험') add(L.circle(b.point, { radius: 1050, color: '#e34b4b', fillColor: '#e34b4b', fillOpacity: .42, weight: 2 }));
+        }
+        add(L.marker(b.point).bindTooltip(b.name, { permanent: true, direction: 'top', className: 'beach-label', offset: [0, -8] }).on('click', () => { selectedBeach = key; document.getElementById('beach-select').value = key; drawMap(); safetyMap.setView(b.point, 14); updateInfo(key); }));
+      });
+      const defaultBeach = selectedBeach === 'all' ? 'haeundae' : selectedBeach; updateInfo(defaultBeach);
+    }
+    document.querySelectorAll('[data-mode]').forEach((button) => button.addEventListener('click', () => { currentMode = button.dataset.mode; document.querySelectorAll('[data-mode]').forEach((item) => item.classList.toggle('active', item === button)); drawMap(); }));
+    document.getElementById('beach-select').addEventListener('change', (event) => { selectedBeach = event.target.value; drawMap(); if (selectedBeach === 'all') safetyMap.setView([35.155, 129.115], 11); else safetyMap.setView(beaches[selectedBeach].point, 14); });
+    document.querySelector('[data-target="map-screen"]').addEventListener('click', () => setTimeout(startMap, 50));
+    document.getElementById('jellyfish-photo').addEventListener('change', (event) => {
+      const photo = event.target.files[0];
+      if (!photo) return;
+      const imageUrl = URL.createObjectURL(photo);
+      const preview = document.getElementById('photo-preview');
+      const resultPhoto = document.getElementById('result-photo');
+      preview.src = imageUrl; preview.classList.add('visible');
+      resultPhoto.onload = () => analyzeJellyfish(resultPhoto);
+      resultPhoto.src = imageUrl; resultPhoto.classList.add('visible');
+      setTimeout(() => {
+        document.querySelectorAll('.screen').forEach((screen) => screen.classList.remove('active'));
+        document.getElementById('result-screen').classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 450);
+    });
+
+    let jellyfishModelPromise;
+    function cosineSimilarity(first, second) {
+      let dot = 0, firstLength = 0, secondLength = 0;
+      for (let index = 0; index < first.length; index += 1) { dot += first[index] * second[index]; firstLength += first[index] ** 2; secondLength += second[index] ** 2; }
+      return dot / (Math.sqrt(firstLength) * Math.sqrt(secondLength));
+    }
+    function imageFeatures(image) {
+      const size = 48; const canvas = document.createElement('canvas'); const context = canvas.getContext('2d', { willReadFrequently: true });
+      canvas.width = size; canvas.height = size; context.imageSmoothingEnabled = false; context.drawImage(image, 0, 0, size, size);
+      const pixels = context.getImageData(0, 0, size, size).data; const bins = Array(24).fill(0); let edges = 0;
+      for (let y = 0; y < size; y += 1) {
+        for (let x = 0; x < size; x += 1) {
+          const index = (y * size + x) * 4; const red = pixels[index]; const green = pixels[index + 1]; const blue = pixels[index + 2];
+          bins[Math.min(7, Math.floor(red / 32))] += 1; bins[8 + Math.min(7, Math.floor(green / 32))] += 1; bins[16 + Math.min(7, Math.floor(blue / 32))] += 1;
+          if (x < size - 1) { const next = (y * size + x + 1) * 4; edges += Math.abs(red - pixels[next]) + Math.abs(green - pixels[next + 1]) + Math.abs(blue - pixels[next + 2]); }
+        }
+      }
+      const pixelCount = size * size; return [...bins.map((value) => value / pixelCount), edges / (pixelCount * 765)];
+    }
+    async function getJellyfishModel() {
+      if (jellyfishModelPromise) return jellyfishModelPromise;
+      jellyfishModelPromise = (async () => {
+        if (!window.jellyfishTrainingData) throw new Error('학습 데이터 파일을 찾지 못했습니다.');
+        return { samples: jellyfishTrainingData };
+      })();
+      return jellyfishModelPromise;
+    }
+    function speciesDetails(label) {
+      const details = {
+        moon: { name: '보름달물해파리', feature: '반투명하고 둥근 우산 안에 네 개의 고리처럼 보이는 무늬가 나타나는 편이에요.', risk: '약독성 · 위험도 낮음' },
+        nomura: { name: '노무라입깃해파리', feature: '연한 갈색 우산과 검붉은 촉수가 특징이며, 매우 크게 자랄 수 있어요.', risk: '강독성 · 위험도 높음' },
+        ghost: { name: '유령해파리', feature: '우산 아래에 하얀색의 끈적이는 촉수가 덩어리처럼 보일 수 있어요.', risk: '강독성 · 위험도 높음' },
+        other: { name: '해파리 아님', feature: '학습 사진 속 해파리가 아닌 물체와 더 비슷하다고 판단했어요.', risk: '해당 없음' },
+        uncertain: { name: '해파리 여부 확인 필요', feature: '학습 사진과의 유사도가 70% 미만이라 해파리 종을 정확히 판단하기 어려워요.', risk: '판단 보류' }
+      };
+      const safety = label === 'other'
+        ? '해파리로 판별되지는 않았어요. 그래도 바다 생물은 만지지 말고 안전요원에게 확인해 주세요.'
+        : label === 'uncertain'
+          ? '사진만으로 해파리 여부를 확정할 수 없어요. 만지지 말고 안전요원에게 확인해 주세요.'
+        : '사진 판별만으로 독성은 확정할 수 없어요. 만지지 말고, 쏘였다면 바닷물 또는 생리식염수로 씻은 뒤 안전요원에게 알리세요. 호흡곤란 등 이상 증상이 있으면 119에 신고하세요.';
+      return { ...details[label], safety };
+    }
+    async function analyzeJellyfish(image) {
+      const status = document.getElementById('model-status'); const result = document.getElementById('species-result');
+      status.textContent = 'AI가 학습 사진 14장과 색·형태 특징을 비교하고 있어요.'; result.hidden = true;
+      try {
+        const { samples } = await getJellyfishModel(); const features = imageFeatures(image);
+        const ranked = samples.map((sample) => ({ ...sample, score: cosineSimilarity(features, sample.features) })).sort((a, b) => b.score - a.score);
+        const winner = ranked[0]; const decidedLabel = winner.score >= .7 ? winner.label : 'uncertain'; const details = speciesDetails(decidedLabel);
+        const isJellyfish = ['moon', 'nomura', 'ghost'].includes(decidedLabel);
+        document.getElementById('species-name').textContent = isJellyfish ? `${details.name} · 해파리로 판단` : details.name;
+        document.getElementById('species-risk').textContent = details.risk;
+        document.getElementById('species-score').textContent = `${Math.round(winner.score * 100)}% (학습 사진과의 유사도이며, 확정 진단이 아닙니다)`;
+        document.getElementById('species-feature').textContent = details.feature;
+        document.getElementById('species-safety').textContent = details.safety;
+        status.textContent = '분석을 마쳤습니다. 인터넷 연결 없이도 학습 사진과 비교해 결과를 보여줍니다.'; result.hidden = false;
+      } catch (error) {
+        status.textContent = '학습 사진을 불러오지 못했습니다. 처음 화면으로 돌아가 F5로 새로고침한 뒤 다시 시도해 주세요.';
+      }
+    }
+  </script>
+</body>
+</html>
