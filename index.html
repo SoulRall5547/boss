@@ -60,7 +60,8 @@
     .upload-card h3 { margin: 8px 0; font-size: 1.4rem; }
     .upload-card p { margin: 0 0 18px; line-height: 1.5; }
     .upload-button { display: inline-block; padding: 15px 20px; border: 3px solid var(--ink); border-radius: 14px; background: #62c4eb; font-weight: 800; box-shadow: 4px 4px 0 var(--ink); cursor: pointer; }
-    #jellyfish-photo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .upload-options { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    #jellyfish-camera, #jellyfish-album { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
     .photo-preview { display: none; width: min(100%, 430px); max-height: 350px; margin: 0 auto 14px; border: 3px solid var(--ink); border-radius: 16px; object-fit: contain; background: #eefaff; }
     .photo-preview.visible { display: block; }
     .privacy-note { font-size: .85rem; color: #374151; }
@@ -135,8 +136,12 @@
             <h3>해파리 사진을 올려 주세요</h3>
             <p>휴대폰에서는 카메라를 열 수 있고,<br>노트북에서는 사진 파일을 선택할 수 있어요.</p>
             <img id="photo-preview" class="photo-preview" alt="선택한 해파리 사진 미리보기">
-            <label class="upload-button" for="jellyfish-photo">사진 찍기 또는 업로드</label>
-            <input id="jellyfish-photo" type="file" accept="image/*" capture="environment">
+            <div class="upload-options">
+              <label class="upload-button" for="jellyfish-camera">사진 촬영하기</label>
+              <label class="upload-button" for="jellyfish-album">앨범에서 업로드</label>
+            </div>
+            <input id="jellyfish-camera" type="file" accept="image/*" capture="environment">
+            <input id="jellyfish-album" type="file" accept="image/*">
             <p class="privacy-note">사진은 이 기기에서만 미리보기로 사용됩니다.</p>
           </div>
         </div>
@@ -279,7 +284,7 @@
     document.querySelectorAll('[data-mode]').forEach((button) => button.addEventListener('click', () => { currentMode = button.dataset.mode; document.querySelectorAll('[data-mode]').forEach((item) => item.classList.toggle('active', item === button)); drawMap(); }));
     document.getElementById('beach-select').addEventListener('change', (event) => { selectedBeach = event.target.value; drawMap(); if (selectedBeach === 'all') safetyMap.setView([35.155, 129.115], 11); else safetyMap.setView(beaches[selectedBeach].point, 14); });
     document.querySelector('[data-target="map-screen"]').addEventListener('click', () => setTimeout(startMap, 50));
-    document.getElementById('jellyfish-photo').addEventListener('change', (event) => {
+    function handlePhotoSelection(event) {
       const photo = event.target.files[0];
       if (!photo) return;
       const imageUrl = URL.createObjectURL(photo);
@@ -293,7 +298,9 @@
         document.getElementById('result-screen').classList.add('active');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }, 450);
-    });
+    }
+    document.getElementById('jellyfish-camera').addEventListener('change', handlePhotoSelection);
+    document.getElementById('jellyfish-album').addEventListener('change', handlePhotoSelection);
 
     let jellyfishModelPromise;
     function cosineSimilarity(first, second) {
