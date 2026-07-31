@@ -201,7 +201,7 @@
               <h3 data-i18n="scoreHeading">사진 유사도</h3><p id="species-score"></p>
               <h3 data-i18n="featureHeading">특징</h3><p id="species-feature"></p>
               <div class="safety-box"><strong data-i18n="safetyHeading">안전 안내</strong><p id="species-safety"></p></div>
-              <p class="data-note">특징·위험도·안전 안내 출처: 국립수산과학원·행정안전부 해파리 정보</p>
+              <p class="data-note" data-i18n="sourceInfo">특징·위험도·안전 안내 출처: 국립수산과학원·행정안전부 해파리 정보</p>
             </section>
           </div>
         </div>
@@ -218,7 +218,7 @@
         exampleNote: '지도 정보는 현재 예시 데이터로 표시됩니다.', smartMap: '스마트 맵<span>수질 · 해파리 · 인파 · 해무 확인</span>', smartLens: '스마트 렌즈<span>해파리 사진으로 종 알아보기</span>',
         backHome: '← 처음 화면', mapTitle: '부산 해수욕장 안전 지도', water: '수질', jellyfish: '해파리', crowd: '인파', fog: '해무', allBeaches: '전체 해수욕장',
         legendTitle: '지도 표시 안내', waterGood: '수질 좋음', waterFair: '수질 보통', waterPoor: '수질 나쁨', jellyRisk: '해파리 위험 예상 지역', crowdLegend: '인파 (원이 클수록 많음)', fogLegend: '해무 예상 범위', fogRiskLegend: '해무 피해 위험 지역', mapDataNote: '※ 현재 화면의 수질·해파리·인파 정보와 업데이트 시간은 기능 시연을 위한 예시 데이터입니다.',
-        lensTitle: '스마트 렌즈', lensDescription: '해파리 사진을 찍거나 업로드하면 AI 분석 결과 화면으로 이동합니다.', uploadTitle: '해파리 사진을 올려 주세요', uploadDescription: '휴대폰에서는 카메라를 열 수 있고,<br>노트북에서는 사진 파일을 선택할 수 있어요.', takePhoto: '사진 촬영하기', uploadPhoto: '앨범에서 업로드', privacyNote: '사진은 이 기기에서만 미리보기로 사용됩니다.', backPhoto: '← 사진 다시 선택', resultTitle: 'AI 분석 결과', stepOne: '1단계 · 해파리 여부', speciesHeading: '판단한 종류', riskHeading: '독성 강도(위험도)', scoreHeading: '사진 유사도', featureHeading: '특징', safetyHeading: '안전 안내'
+        lensTitle: '스마트 렌즈', lensDescription: '해파리 사진을 찍거나 업로드하면 AI 분석 결과 화면으로 이동합니다.', uploadTitle: '해파리 사진을 올려 주세요', uploadDescription: '휴대폰에서는 카메라를 열 수 있고,<br>노트북에서는 사진 파일을 선택할 수 있어요.', takePhoto: '사진 촬영하기', uploadPhoto: '앨범에서 업로드', privacyNote: '사진은 이 기기에서만 미리보기로 사용됩니다.', backPhoto: '← 사진 다시 선택', resultTitle: 'AI 분석 결과', stepOne: '1단계 · 해파리 여부', speciesHeading: '판단한 종류', riskHeading: '독성 강도(위험도)', scoreHeading: '사진 유사도', featureHeading: '특징', safetyHeading: '안전 안내', sourceInfo: '특징·위험도·안전 안내 출처: 국립수산과학원·행정안전부 해파리 정보'
       },
       en: {
         homeEyebrow: 'Busan Ocean Safety Guide', mapLabel: 'Korea marine safety guide image', featureTitle: 'What BOSS can do',
@@ -226,7 +226,7 @@
         exampleNote: 'Map information is currently sample data.', smartMap: 'Smart Map<span>Water · Jellyfish · Crowd · Sea fog</span>', smartLens: 'Smart Lens<span>Check jellyfish species from a photo</span>',
         backHome: '← Home', mapTitle: 'Busan Beach Safety Map', water: 'Water', jellyfish: 'Jellyfish', crowd: 'Crowd', fog: 'Sea fog', allBeaches: 'All beaches',
         legendTitle: 'Map key', waterGood: 'Good water quality', waterFair: 'Fair water quality', waterPoor: 'Poor water quality', jellyRisk: 'Jellyfish risk area', crowdLegend: 'Crowd (larger = busier)', fogLegend: 'Expected fog area', fogRiskLegend: 'Fog damage risk area', mapDataNote: '※ Water, jellyfish, crowd, and update-time information on this screen is sample data for this prototype.',
-        lensTitle: 'Smart Lens', lensDescription: 'Take or upload a jellyfish photo to view the AI analysis result.', uploadTitle: 'Upload a jellyfish photo', uploadDescription: 'On a phone, you can open the camera.<br>On a computer, choose an image file.', takePhoto: 'Take photo', uploadPhoto: 'Upload from album', privacyNote: 'Your photo is used only for preview on this device.', backPhoto: '← Choose another photo', resultTitle: 'AI Analysis Result', stepOne: 'Step 1 · Jellyfish check', speciesHeading: 'Most likely species', riskHeading: 'Toxicity level (risk)', scoreHeading: 'Image score', featureHeading: 'Features', safetyHeading: 'Safety guide'
+        lensTitle: 'Smart Lens', lensDescription: 'Take or upload a jellyfish photo to view the AI analysis result.', uploadTitle: 'Upload a jellyfish photo', uploadDescription: 'On a phone, you can open the camera.<br>On a computer, choose an image file.', takePhoto: 'Take photo', uploadPhoto: 'Upload from album', privacyNote: 'Your photo is used only for preview on this device.', backPhoto: '← Choose another photo', resultTitle: 'AI Analysis Result', stepOne: 'Step 1 · Jellyfish check', speciesHeading: 'Most likely species', riskHeading: 'Toxicity level (risk)', scoreHeading: 'Image score', featureHeading: 'Features', safetyHeading: 'Safety guide', sourceInfo: 'Sources for features, risk, and safety guide: National Institute of Fisheries Science and Ministry of the Interior and Safety jellyfish information'
       }
     };
     let language = localStorage.getItem('boss-language') || 'ko';
