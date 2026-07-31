@@ -479,7 +479,7 @@
         ]);
         const presenceTop = highestResult(presence);
         const jellyfishProbability = Math.round((presence.find((item) => item.label === 'a jellyfish in the sea')?.score || 0) * 100);
-        const isJellyfish = presenceTop.label === 'a jellyfish in the sea' && jellyfishProbability >= 70;
+        const isJellyfish = presenceTop.label === 'a jellyfish in the sea' && jellyfishProbability >= 50;
         document.getElementById('presence-result').textContent = isJellyfish
           ? (isEnglish ? `Likely a jellyfish · ${jellyfishProbability}%` : `해파리로 판단 · 확률 ${jellyfishProbability}%`)
           : (isEnglish ? `Probably not a jellyfish · jellyfish probability ${jellyfishProbability}%` : `해파리가 아닐 가능성이 높음 · 해파리일 확률 ${jellyfishProbability}%`);
@@ -511,7 +511,7 @@
         document.getElementById('species-risk').textContent = details.risk;
         document.getElementById('species-score').innerHTML = isJellyfish
           ? (isEnglish ? `Step 1 jellyfish probability: <strong>${jellyfishProbability}%</strong><br>Step 2 ${details.name} probability: <strong>${speciesProbability}%</strong>` : `1단계 해파리일 확률: <strong>${jellyfishProbability}%</strong><br>2단계 ${details.name}일 확률: <strong>${speciesProbability}%</strong>`)
-          : (isEnglish ? `Jellyfish probability: <strong>${jellyfishProbability}%</strong><br>Below 70%, so it is not confirmed as a jellyfish.` : `해파리일 확률: <strong>${jellyfishProbability}%</strong><br>70% 미만이므로 해파리로 확정하지 않아요.`);
+          : (isEnglish ? `Jellyfish probability: <strong>${jellyfishProbability}%</strong><br>Below 50%, so it is not classified as a jellyfish.` : `해파리일 확률: <strong>${jellyfishProbability}%</strong><br>50% 미만이므로 해파리로 판독하지 않아요.`);
         document.getElementById('species-feature').textContent = details.feature;
         document.getElementById('species-safety').textContent = details.safety;
         status.textContent = isJellyfish
@@ -570,7 +570,7 @@
       try {
         const { samples } = await getJellyfishModel(); const features = imageFeatures(image);
         const ranked = samples.map((sample) => ({ ...sample, score: cosineSimilarity(features, sample.features) })).sort((a, b) => b.score - a.score);
-        const winner = ranked[0]; const decidedLabel = winner.score >= .7 ? winner.label : 'uncertain'; const details = speciesDetails(decidedLabel);
+        const winner = ranked[0]; const decidedLabel = winner.score >= .5 ? winner.label : 'uncertain'; const details = speciesDetails(decidedLabel);
         const isJellyfish = ['moon', 'nomura', 'ghost'].includes(decidedLabel);
         document.getElementById('species-name').textContent = isJellyfish ? `${details.name} · 해파리로 판단` : details.name;
         document.getElementById('species-risk').textContent = details.risk;
