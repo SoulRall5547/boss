@@ -75,6 +75,12 @@
     #species-name { font-size: 1.4rem; font-weight: 800; }
     .model-status { padding: 12px; border-radius: 12px; background: #e9f8ff; font-weight: 700; }
     .safety-box { margin-top: 18px; padding: 14px; border: 2px solid var(--ink); border-radius: 14px; background: #fff6e6; }
+    .feature-intro { margin: 18px 0; padding: 16px; border: 2px solid var(--ink); border-radius: 16px; background: rgba(255,255,255,.82); text-align: left; }
+    .feature-intro h2 { margin: 0 0 10px; font-size: 1.1rem; }
+    .feature-intro ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+    .feature-intro li { padding: 10px; border-radius: 10px; background: #e9f8ff; font-weight: 700; line-height: 1.4; }
+    .feature-icon { display: inline-flex; width: 1.35em; height: 1.35em; margin-right: 5px; align-items: center; justify-content: center; border-radius: 50%; background: #075985; color: #fff; font-size: .75em; vertical-align: .08em; }
+    .feature-intro small { display: block; margin-top: 10px; color: #334155; }
     @media (max-width: 650px) { .screen { padding: 20px 16px 32px; } .map-preview { height: 280px; } .choice-buttons { grid-template-columns: 1fr; } .map-header { align-items: flex-start; flex-direction: column; } .map-controls { justify-content: flex-start; width: 100%; } #beach-select { max-width: 100%; flex: 1; } #safety-map { min-height: 420px; } .result-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -89,8 +95,18 @@
           <iframe title="부산 지도" src="https://www.openstreetmap.org/export/embed.html?bbox=128.89%2C35.04%2C129.24%2C35.31&amp;layer=mapnik"></iframe>
         </div>
         <p class="map-label">OpenStreetMap 기반 부산 지도</p>
+        <section class="feature-intro" aria-labelledby="feature-intro-title">
+          <h2 id="feature-intro-title">BOSS에서 할 수 있는 일</h2>
+          <ul>
+            <li><span class="feature-icon" aria-hidden="true">1</span>수질·인파 안전 지도</li>
+            <li><span class="feature-icon" aria-hidden="true">2</span>해파리 출몰 가능성</li>
+            <li><span class="feature-icon" aria-hidden="true">3</span>해무 위치·이동 경로</li>
+            <li><span class="feature-icon" aria-hidden="true">4</span>사진으로 해파리 판독</li>
+          </ul>
+          <small>지도 정보는 현재 예시 데이터로 표시됩니다.</small>
+        </section>
         <div class="choice-buttons">
-          <button class="choice" type="button" data-target="map-screen">지도 기능 선택<span>수질 · 해파리 · 인파 확인</span></button>
+          <button class="choice" type="button" data-target="map-screen">지도 기능 선택<span>수질 · 해파리 · 인파 · 해무 확인</span></button>
           <button class="choice" type="button" data-target="lens-screen">스마트 렌즈 기능 선택<span>해파리 사진으로 종 알아보기</span></button>
         </div>
       </div>
@@ -158,6 +174,7 @@
             <h2 id="result-title">AI 분석 결과</h2>
             <p id="model-status" class="model-status">사진을 준비하고 있어요.</p>
             <section id="species-result" hidden>
+              <h3>1단계 · 해파리 여부</h3><p id="presence-result"></p>
               <h3>판단한 종류</h3><p id="species-name"><strong>분석 중</strong></p>
               <h3>독성 강도(위험도)</h3><p id="species-risk"></p>
               <h3>사진 유사도</h3><p id="species-score"></p>
@@ -172,7 +189,6 @@
   </main>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="model-data.js"></script>
   <script>
     document.querySelectorAll('[data-target]').forEach((button) => {
       button.addEventListener('click', () => {
@@ -291,7 +307,7 @@
       const preview = document.getElementById('photo-preview');
       const resultPhoto = document.getElementById('result-photo');
       preview.src = imageUrl; preview.classList.add('visible');
-      resultPhoto.onload = () => analyzeJellyfish(resultPhoto);
+      resultPhoto.onload = () => analyzeWithBrowserAi(resultPhoto);
       resultPhoto.src = imageUrl; resultPhoto.classList.add('visible');
       setTimeout(() => {
         document.querySelectorAll('.screen').forEach((screen) => screen.classList.remove('active'));
@@ -301,6 +317,86 @@
     }
     document.getElementById('jellyfish-camera').addEventListener('change', handlePhotoSelection);
     document.getElementById('jellyfish-album').addEventListener('change', handlePhotoSelection);
+
+    // API 키 없이 브라우저에서 실행하는 공개 사진 판별 AI입니다.
+    let browserAiPromise;
+    const AI_MODEL_URL = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2';
+
+    async function getBrowserAi(status) {
+      if (browserAiPromise) return browserAiPromise;
+      browserAiPromise = (async () => {
+        status.textContent = '무료 사진 판별 AI를 준비하고 있어요. 처음 한 번은 모델을 내려받아 조금 걸릴 수 있어요.';
+        const { pipeline } = await import(AI_MODEL_URL);
+        return pipeline('zero-shot-image-classification', 'Xenova/clip-vit-base-patch32');
+      })();
+      return browserAiPromise;
+    }
+
+    function highestResult(results) {
+      return results.reduce((highest, item) => item.score > highest.score ? item : highest);
+    }
+
+    async function analyzeWithBrowserAi(image) {
+      const status = document.getElementById('model-status');
+      const result = document.getElementById('species-result');
+      const label = document.querySelector('.result-label');
+      result.hidden = true;
+      label.textContent = '무료 브라우저 AI · 사진을 외부 분석 서버에 보내지 않음';
+
+      try {
+        const classifier = await getBrowserAi(status);
+        status.textContent = '1단계: 사진 속 대상이 해파리인지 확인하고 있어요.';
+        const presence = await classifier(image.src, [
+          'a jellyfish in the sea',
+          'a photo without a jellyfish'
+        ]);
+        const presenceTop = highestResult(presence);
+        const jellyfishProbability = Math.round((presence.find((item) => item.label === 'a jellyfish in the sea')?.score || 0) * 100);
+        const isJellyfish = presenceTop.label === 'a jellyfish in the sea' && jellyfishProbability >= 70;
+        document.getElementById('presence-result').textContent = isJellyfish
+          ? `해파리로 판단 · 확률 ${jellyfishProbability}%`
+          : `해파리가 아닐 가능성이 높음 · 해파리일 확률 ${jellyfishProbability}%`;
+        document.getElementById('species-name').previousElementSibling.textContent = '2단계 · 가장 가능성 높은 종류';
+        document.getElementById('species-score').previousElementSibling.textContent = '판독 확률';
+
+        status.textContent = isJellyfish
+          ? '2단계: 가장 가능성 높은 해파리 종류를 찾고 있어요.'
+          : '사진 판독을 마쳤어요.';
+
+        let finalLabel = 'other';
+        let speciesProbability = 0;
+        if (isJellyfish) {
+          const species = await classifier(image.src, [
+            'a moon jellyfish',
+            'a Nomura jellyfish',
+            'a ghost jellyfish'
+          ]);
+          const speciesTop = highestResult(species);
+          finalLabel = speciesTop.label === 'a moon jellyfish' ? 'moon'
+            : speciesTop.label === 'a Nomura jellyfish' ? 'nomura' : 'ghost';
+          speciesProbability = Math.round(speciesTop.score * 100);
+        }
+
+        const details = speciesDetails(finalLabel);
+        document.getElementById('species-name').textContent = isJellyfish
+          ? `${details.name} · 가장 높은 판독 결과`
+          : '해파리가 아닐 가능성이 가장 높아요';
+        document.getElementById('species-risk').textContent = details.risk;
+        document.getElementById('species-score').innerHTML = isJellyfish
+          ? `1단계 해파리일 확률: <strong>${jellyfishProbability}%</strong><br>2단계 ${details.name}일 확률: <strong>${speciesProbability}%</strong>`
+          : `해파리일 확률: <strong>${jellyfishProbability}%</strong><br>70% 미만이므로 해파리로 확정하지 않아요.`;
+        document.getElementById('species-feature').textContent = details.feature;
+        document.getElementById('species-safety').textContent = details.safety;
+        status.textContent = isJellyfish
+          ? '판독을 마쳤어요. 사진만으로 안전을 확정할 수 없으니 현장 안내도 확인해 주세요.'
+          : '판독을 마쳤어요. 바다 생물은 만지지 말고 현장 안전요원에게 확인해 주세요.';
+        result.hidden = false;
+      } catch (error) {
+        console.error(error);
+        const reason = error?.message ? ` (${error.message.slice(0, 90)})` : '';
+        status.textContent = `무료 AI 모델을 준비하지 못했어요. 인터넷 연결을 확인한 뒤 F5로 새로고침하고 다시 시도해 주세요.${reason}`;
+      }
+    }
 
     let jellyfishModelPromise;
     function cosineSimilarity(first, second) {
