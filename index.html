@@ -41,17 +41,33 @@
     .map-info { margin-top: 16px; padding: 18px; border: 3px solid var(--ink); border-radius: 18px; background: var(--white); }
     .map-info h3 { margin: 0 0 10px; font-size: 1.25rem; }
     .map-info p { margin: 7px 0; line-height: 1.5; }
-    .summary { padding: 10px 12px; border-radius: 12px; background: #e9f8ff; font-weight: 700; }
+    .observation-box { margin-top: 14px; padding: 12px; border: 2px solid #64748b; border-radius: 12px; background: #f8fafc; }
+    .observation-box > strong, .prediction > strong { display: block; color: #075985; }
+    .data-metadata { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 12px 0; padding: 12px; border: 1.5px solid #94a3b8; border-radius: 12px; background: #f8fafc; font-size: .88rem; line-height: 1.45; }
+    .data-metadata span { padding: 4px 0; }
+    .overall-safety { margin-bottom: 14px; padding: 13px 14px; border: 3px solid #075985; border-radius: 14px; background: #e9f8ff; font-weight: 800; }
+    .overall-safety strong { display: block; color: #075985; font-size: 1.1rem; }
+    .overall-safety small { display: block; margin-top: 5px; font-weight: 700; }
+    .action-guidance { margin: 12px 0; padding: 14px; border: 3px solid #b91c1c; border-radius: 14px; background: #fff1f2; }
+    .action-guidance strong { color: #991b1b; }
+    .action-guidance p { margin: 7px 0; }
+    .action-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .action-buttons a, .action-step { display: inline-flex; min-height: 38px; padding: 7px 10px; align-items: center; border: 2px solid var(--ink); border-radius: 10px; background: #fff; color: var(--ink); font-weight: 800; text-decoration: none; }
+    .summary { padding: 12px 14px; border: 2px solid #075985; border-radius: 12px; background: #dff4ff; color: var(--ink); font-size: 1rem; font-weight: 700; }
+    .summary-label { color: #075985; font-size: 1.08rem; font-weight: 900; }
     .prediction { margin-top: 12px; padding: 13px; border: 2px solid var(--ink); border-radius: 12px; background: #f7fcff; }
     .prediction strong { font-size: 1.1rem; }
     .prediction ul { margin: 9px 0 0; padding-left: 20px; line-height: 1.55; }
     .legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; font-size: .9rem; font-weight: 700; }
     .legend strong { width: 100%; }
     .legend span::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: 5px; border: 1px solid var(--ink); border-radius: 50%; vertical-align: -1px; }
-    .safe::before { background: #32a852; } .caution::before { background: #f4c542; } .danger::before { background: #e34b4b; }
+    .legend .safe::before { background: #32a852; } .legend .caution::before { background: #f4c542; } .legend .danger::before { background: #e34b4b; }
+    .legend .overall-safe::before, .legend .overall-caution::before, .legend .overall-danger::before, .legend .overall-control::before { background: #075985; }
     .jellyfish-key::before { width: 15px !important; height: 15px !important; background: transparent; border: 3px solid #e34b4b !important; }
     .crowd-key::before { width: 16px !important; height: 16px !important; background: #60a5fa; border-color: #1d4ed8 !important; }
     .fog-key::before { width: 18px !important; border-radius: 4px !important; background: #e2e8f0; border-color: #64748b !important; }
+    .fog-current-key::before { width: 15px !important; height: 15px !important; background: #e2e8f0; border-color: #64748b !important; }
+    .fog-route-key::before { width: 20px !important; height: 5px !important; border: 0 !important; border-radius: 0 !important; background: #64748b; }
     .fog-risk-key::before { width: 15px !important; height: 15px !important; border-radius: 3px !important; background: rgba(249,115,22,.5); border: 3px solid #ea580c !important; }
     .data-note { margin-bottom: 0 !important; font-size: .85rem; color: #374151; }
     .leaflet-container { font-family: Arial, "Malgun Gothic", sans-serif; }
@@ -85,6 +101,9 @@
     #species-name { font-size: 1.4rem; font-weight: 800; }
     .model-status { padding: 12px; border-radius: 12px; background: #e9f8ff; font-weight: 700; }
     .safety-box { margin-top: 18px; padding: 14px; border: 2px solid var(--ink); border-radius: 14px; background: #fff6e6; }
+    .uncertainty-box { margin-top: 14px; padding: 14px; border: 2px solid #7c3aed; border-radius: 14px; background: #f5f3ff; }
+    .uncertainty-box strong { color: #5b21b6; }
+    .uncertainty-box p { margin-top: 7px; }
     .feature-intro { margin: 18px 0; padding: 16px; border: 2px solid var(--ink); border-radius: 16px; background: rgba(255,255,255,.82); text-align: left; }
     .feature-intro h2 { margin: 0 0 10px; font-size: 1.1rem; }
     .feature-intro ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
@@ -92,9 +111,10 @@
     .feature-icon { display: inline-flex; width: 1.35em; height: 1.35em; margin-right: 5px; align-items: center; justify-content: center; border-radius: 50%; background: #075985; color: #fff; font-size: .75em; vertical-align: .08em; }
     .beach-pin-icon { background: transparent; border: 0; }
     .beach-pin { display: flex; align-items: center; gap: 6px; width: max-content; padding: 5px 8px; border: 2px solid var(--ink); border-radius: 12px; background: #fff; color: var(--ink); font-family: inherit; font-size: .78rem; font-weight: 800; white-space: nowrap; box-shadow: 2px 2px 0 var(--ink); }
+    .safety-symbol { display: inline-flex; width: 18px; height: 18px; align-items: center; justify-content: center; border: 1.5px solid var(--ink); border-radius: 50%; color: #fff; font-size: .82rem; line-height: 1; }
     .water-badge { width: 12px; height: 12px; border: 1.5px solid var(--ink); border-radius: 50%; flex: 0 0 auto; }
     .feature-intro small { display: block; margin-top: 10px; color: #334155; }
-    @media (max-width: 650px) { .screen { padding: 20px 16px 32px; } main > .language-switch { margin: 8px 12px 0 auto; } .language-switch button { min-height: 28px; padding: 4px 8px; font-size: .72rem; } .map-preview { width: min(78vw, 275px); } .choice-buttons { grid-template-columns: 1fr; } .map-header { align-items: flex-start; flex-direction: column; } .map-controls { justify-content: flex-start; width: 100%; } #beach-select { max-width: 100%; flex: 1; } #safety-map { min-height: 420px; } .result-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 650px) { .screen { padding: 20px 16px 32px; } main > .language-switch { margin: 8px 12px 0 auto; } .language-switch button { min-height: 28px; padding: 4px 8px; font-size: .72rem; } .map-preview { width: min(78vw, 275px); } .choice-buttons, .data-metadata { grid-template-columns: 1fr; } .map-header { align-items: flex-start; flex-direction: column; } .map-controls { justify-content: flex-start; width: 100%; } #beach-select { max-width: 100%; flex: 1; } #safety-map { min-height: 420px; } .result-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -149,14 +169,19 @@
         </div>
         <div class="map-shell"><div id="safety-map" aria-label="OpenStreetMap 기반 부산 해수욕장 안전 지도"></div></div>
         <article class="map-info" aria-live="polite">
+          <div id="overall-safety" class="overall-safety safe"></div>
+          <section id="action-guidance" class="action-guidance" hidden></section>
+          <p id="info-summary" class="summary"></p>
           <h3 id="info-title">해운대 수질 정보 · 예시 데이터</h3>
-          <p id="info-detail"></p><p id="info-summary" class="summary"></p>
-          <div id="prediction-box" class="prediction" hidden><strong id="prediction-result"></strong><ul id="prediction-reasons"></ul></div>
+          <section class="observation-box"><strong data-i18n="observationHeading">현재 관측 · 예시 데이터</strong><p id="info-detail"></p></section>
+          <section id="prediction-box" class="prediction" hidden><strong data-i18n="forecastHeading">AI 예측 · 향후 3시간 예시</strong><div id="prediction-content"></div></section>
           <div class="legend" aria-label="지도 표시 안내">
             <strong data-i18n="legendTitle">지도 표시 안내</strong>
             <span class="safe" data-i18n="waterGood">수질 좋음</span><span class="caution" data-i18n="waterFair">수질 보통</span><span class="danger" data-i18n="waterPoor">수질 나쁨</span>
-            <span class="jellyfish-key" data-i18n="jellyRisk">해파리 위험 예상 지역</span><span class="crowd-key" data-i18n="crowdLegend">인파 (원이 클수록 많음)</span><span class="fog-key" data-i18n="fogLegend">해무 예상 범위</span><span class="fog-risk-key" data-i18n="fogRiskLegend">해무 피해 위험 지역</span>
+            <span class="overall-safe" data-i18n="overallSafe">✓ 종합 안전</span><span class="overall-caution" data-i18n="overallCaution">! 종합 주의</span><span class="overall-danger" data-i18n="overallDanger">× 입수 자제</span><span class="overall-control" data-i18n="overallControl">– 현장 통제</span>
+            <span class="jellyfish-key" data-i18n="jellyRisk">해파리 위험 예상 지역</span><span class="crowd-key" data-i18n="crowdLegend">인파 (원이 클수록 많음)</span><span class="fog-current-key" data-i18n="fogCurrentLegend">현재 해무 관측</span><span class="fog-route-key" data-i18n="fogRouteLegend">AI 예상 이동 경로</span><span class="fog-risk-key" data-i18n="fogRiskLegend">해무 피해 위험 지역</span>
           </div>
+          <div id="data-metadata" class="data-metadata"></div>
           <p class="data-note" data-i18n="mapDataNote">※ 현재 화면의 수질·해파리·인파 정보와 업데이트 시간은 기능 시연을 위한 예시 데이터입니다.</p>
         </article>
       </div>
@@ -201,6 +226,7 @@
               <h3 data-i18n="scoreHeading">사진 유사도</h3><p id="species-score"></p>
               <h3 data-i18n="featureHeading">특징</h3><p id="species-feature"></p>
               <div class="safety-box"><strong data-i18n="safetyHeading">안전 안내</strong><p id="species-safety"></p></div>
+              <section id="uncertainty-box" class="uncertainty-box"></section>
               <p class="data-note" data-i18n="sourceInfo">특징·위험도·안전 안내 출처: 국립수산과학원·행정안전부 해파리 정보</p>
             </section>
           </div>
@@ -216,16 +242,16 @@
         homeEyebrow: '부산 바다 안전 안내', mapLabel: '대한민국 해양 안전 안내 이미지', featureTitle: 'BOSS에서 할 수 있는 일',
         featureOne: '<span class="feature-icon" aria-hidden="true">1</span>수질·인파 안전 지도', featureTwo: '<span class="feature-icon" aria-hidden="true">2</span>해파리 출몰 가능성', featureThree: '<span class="feature-icon" aria-hidden="true">3</span>해무 위치·이동 경로', featureFour: '<span class="feature-icon" aria-hidden="true">4</span>사진으로 해파리 판독',
         exampleNote: '지도 정보는 현재 예시 데이터로 표시됩니다.', smartMap: '스마트 맵<span>수질 · 해파리 · 인파 · 해무 확인</span>', smartLens: '스마트 렌즈<span>해파리 사진으로 종 알아보기</span>',
-        backHome: '← 처음 화면', mapTitle: '부산 해수욕장 안전 지도', water: '수질', jellyfish: '해파리', crowd: '인파', fog: '해무', allBeaches: '전체 해수욕장',
-        legendTitle: '지도 표시 안내', waterGood: '수질 좋음', waterFair: '수질 보통', waterPoor: '수질 나쁨', jellyRisk: '해파리 위험 예상 지역', crowdLegend: '인파 (원이 클수록 많음)', fogLegend: '해무 예상 범위', fogRiskLegend: '해무 피해 위험 지역', mapDataNote: '※ 현재 화면의 수질·해파리·인파 정보와 업데이트 시간은 기능 시연을 위한 예시 데이터입니다.',
+        backHome: '← 처음 화면', mapTitle: '부산 해수욕장 안전 지도', water: '수질', jellyfish: '해파리', crowd: '인파', fog: '해무', allBeaches: '전체 해수욕장', observationHeading: '현재 관측 · 예시 데이터', forecastHeading: 'AI 예측 · 향후 3시간 예시',
+        legendTitle: '지도 표시 안내', waterGood: '수질 좋음', waterFair: '수질 보통', waterPoor: '수질 나쁨', overallSafe: '✓ 입수 가능', overallCaution: '! 현장 확인', overallDanger: '× 입수 자제', overallControl: '– 현장 통제', jellyRisk: '해파리 위험 예상 지역', crowdLegend: '인파 (원이 클수록 많음)', fogCurrentLegend: '현재 해무 관측', fogRouteLegend: 'AI 예상 이동 경로', fogRiskLegend: '해무 피해 위험 지역', mapDataNote: '※ 현재 화면의 수질·해파리·인파 정보와 업데이트 시간은 기능 시연을 위한 예시 데이터입니다.',
         lensTitle: '스마트 렌즈', lensDescription: '해파리 사진을 찍거나 업로드하면 AI 분석 결과 화면으로 이동합니다.', uploadTitle: '해파리 사진을 올려 주세요', uploadDescription: '휴대폰에서는 카메라를 열 수 있고,<br>노트북에서는 사진 파일을 선택할 수 있어요.', takePhoto: '사진 촬영하기', uploadPhoto: '앨범에서 업로드', privacyNote: '사진은 이 기기에서만 미리보기로 사용됩니다.', backPhoto: '← 사진 다시 선택', resultTitle: 'AI 분석 결과', stepOne: '1단계 · 해파리 여부', speciesHeading: '판단한 종류', riskHeading: '독성 강도(위험도)', scoreHeading: '사진 유사도', featureHeading: '특징', safetyHeading: '안전 안내', sourceInfo: '특징·위험도·안전 안내 출처: 국립수산과학원·행정안전부 해파리 정보'
       },
       en: {
         homeEyebrow: 'Busan Ocean Safety Guide', mapLabel: 'Korea marine safety guide image', featureTitle: 'What BOSS can do',
         featureOne: '<span class="feature-icon" aria-hidden="true">1</span>Water quality & crowd safety map', featureTwo: '<span class="feature-icon" aria-hidden="true">2</span>Jellyfish appearance forecast', featureThree: '<span class="feature-icon" aria-hidden="true">3</span>Sea fog location & route', featureFour: '<span class="feature-icon" aria-hidden="true">4</span>Jellyfish photo check',
         exampleNote: 'Map information is currently sample data.', smartMap: 'Smart Map<span>Water · Jellyfish · Crowd · Sea fog</span>', smartLens: 'Smart Lens<span>Check jellyfish species from a photo</span>',
-        backHome: '← Home', mapTitle: 'Busan Beach Safety Map', water: 'Water', jellyfish: 'Jellyfish', crowd: 'Crowd', fog: 'Sea fog', allBeaches: 'All beaches',
-        legendTitle: 'Map key', waterGood: 'Good water quality', waterFair: 'Fair water quality', waterPoor: 'Poor water quality', jellyRisk: 'Jellyfish risk area', crowdLegend: 'Crowd (larger = busier)', fogLegend: 'Expected fog area', fogRiskLegend: 'Fog damage risk area', mapDataNote: '※ Water, jellyfish, crowd, and update-time information on this screen is sample data for this prototype.',
+        backHome: '← Home', mapTitle: 'Busan Beach Safety Map', water: 'Water', jellyfish: 'Jellyfish', crowd: 'Crowd', fog: 'Sea fog', allBeaches: 'All beaches', observationHeading: 'Current observations · sample data', forecastHeading: 'AI forecast · next 3 hours (sample)',
+        legendTitle: 'Map key', waterGood: 'Good water quality', waterFair: 'Fair water quality', waterPoor: 'Poor water quality', overallSafe: '✓ Enter water', overallCaution: '! Check locally', overallDanger: '× Avoid entering water', overallControl: '– Beach closed', jellyRisk: 'Jellyfish risk area', crowdLegend: 'Crowd (larger = busier)', fogCurrentLegend: 'Current sea-fog observation', fogRouteLegend: 'AI predicted route', fogRiskLegend: 'Fog damage risk area', mapDataNote: '※ Water, jellyfish, crowd, and update-time information on this screen is sample data for this prototype.',
         lensTitle: 'Smart Lens', lensDescription: 'Take or upload a jellyfish photo to view the AI analysis result.', uploadTitle: 'Upload a jellyfish photo', uploadDescription: 'On a phone, you can open the camera.<br>On a computer, choose an image file.', takePhoto: 'Take photo', uploadPhoto: 'Upload from album', privacyNote: 'Your photo is used only for preview on this device.', backPhoto: '← Choose another photo', resultTitle: 'AI Analysis Result', stepOne: 'Step 1 · Jellyfish check', speciesHeading: 'Most likely species', riskHeading: 'Toxicity level (risk)', scoreHeading: 'Image score', featureHeading: 'Features', safetyHeading: 'Safety guide', sourceInfo: 'Sources for features, risk, and safety guide: National Institute of Fisheries Science and Ministry of the Interior and Safety jellyfish information'
       }
     };
@@ -290,6 +316,57 @@
       const chance = Math.min(95, Math.max(5, Math.round((b.humidity - 45) * 1.25 + temperatureFit + windScore)));
       return { chance, level: chance >= 70 ? '위험' : chance >= 45 ? '주의' : '안전' };
     }
+    function overallSafety(b) {
+      const reasons = [];
+      if (b.controlled) return { level: 'control', reasons: [] };
+      if (b.condition === '위험') reasons.push('waterDanger');
+      if (b.jellyfish >= 10) reasons.push('manyJellyfish');
+      if (reasons.length) return { level: 'danger', reasons };
+      if (b.condition === '주의') reasons.push('waterCaution');
+      if (b.jellyfish > 0) reasons.push('jellyfish');
+      if (b.crowd >= 75) reasons.push('crowd');
+      if (fogForecast(b).level === '위험') reasons.push('fog');
+      return { level: reasons.length ? 'caution' : 'safe', reasons };
+    }
+    function renderOverallSafety(b) {
+      const safety = overallSafety(b);
+      const box = document.getElementById('overall-safety');
+      const isEnglish = language === 'en';
+      const copy = isEnglish
+        ? {
+            safe: ["Today's entry guide", '✓ Enter water', 'No major warning signal in this sample data.'],
+            caution: ["Today's entry guide", '! Check locally', 'Check local guidance before entering water.'],
+            danger: ["Today's entry guide", '× Avoid entering water', 'Do not enter the water and follow lifeguard guidance.'],
+            control: ["Today's entry guide", '– Beach closed', 'Official beach-control notice'],
+            waterDanger: 'Poor water-quality status', manyJellyfish: `Jellyfish sightings: ${b.jellyfish}`, waterCaution: 'Water-quality caution status', jellyfish: `Jellyfish sightings: ${b.jellyfish}`, crowd: `Crowd level: ${b.crowd}%`, fog: 'High sea-fog possibility'
+          }
+        : {
+            safe: ['오늘의 입수 안내', '✓ 입수 가능', '이 예시 데이터에서 큰 위험 신호가 없어요.'],
+            caution: ['오늘의 입수 안내', '! 현장 확인', '입수 전 현장 안내를 확인해 주세요.'],
+            danger: ['오늘의 입수 안내', '× 입수 자제', '입수하지 말고 안전요원 안내를 따라 주세요.'],
+            control: ['오늘의 입수 안내', '– 현장 통제', '해수욕장 공식 통제 안내'],
+            waterDanger: '수질 위험 등급', manyJellyfish: `해파리 현재 관찰 ${b.jellyfish}건`, waterCaution: '수질 주의 등급', jellyfish: `해파리 현재 관찰 ${b.jellyfish}건`, crowd: `혼잡도 ${b.crowd}%`, fog: '해무 발생 가능성 높음'
+          };
+      const [title, action, defaultReason] = copy[safety.level];
+      const reasons = safety.reasons.length ? safety.reasons.map((reason) => copy[reason]).join(' · ') : defaultReason;
+      box.className = `overall-safety ${safety.level}`;
+      box.innerHTML = `<strong>${title}</strong><small>${action} · ${isEnglish ? 'Reason: ' : '판단 이유: '}${reasons}</small>`;
+      const actionGuidance = document.getElementById('action-guidance');
+      const needsUrgentAction = safety.level === 'danger' || safety.level === 'control';
+      actionGuidance.hidden = !needsUrgentAction;
+      if (needsUrgentAction) {
+        actionGuidance.innerHTML = isEnglish
+          ? '<strong>Risk action guide</strong><p>Do not enter the water. Tell a nearby lifeguard about the location and follow official instructions.</p><div class="action-buttons"><span class="action-step">Tell a lifeguard</span><a href="tel:119">Call 119 for an emergency</a><a href="https://www.nifs.go.kr/portal/pcon0000066/systA/actionConts.do" target="_blank" rel="noreferrer">Jellyfish report & first aid</a></div><p><small>If stung, leave the water. Use seawater or saline to remove tentacles; do not use tap water. Seek emergency help for breathing difficulty or loss of consciousness.</small></p>'
+          : '<strong>위험 행동 안내</strong><p>입수하지 말고, 가까운 안전요원에게 위치를 알린 뒤 현장 안내를 따라 주세요.</p><div class="action-buttons"><span class="action-step">안전요원에게 알리기</span><a href="tel:119">응급 상황 시 119 신고</a><a href="https://www.nifs.go.kr/portal/pcon0000066/systA/actionConts.do" target="_blank" rel="noreferrer">해파리 신고·응급 안내</a></div><p><small>해파리에 쏘이면 물 밖으로 나온 뒤 바닷물 또는 생리식염수로 촉수를 제거하세요. 수돗물은 사용하지 말고, 호흡 곤란·의식 이상 시 즉시 119에 도움을 요청하세요.</small></p>';
+      }
+      return safety;
+    }
+    function renderDataMetadata() {
+      const metadata = document.getElementById('data-metadata');
+      metadata.innerHTML = language === 'en'
+        ? '<span><strong>Data status:</strong> Sample data (official connection planned)</span><span><strong>Observation time:</strong> 10:30 (sample)</span><span><strong>Last updated:</strong> 10:35 (sample)</span><span><strong>Display:</strong> Current observations / AI forecast</span><span><strong>Future providers:</strong> Busan City, NIFS, KMA</span><span><strong>Entry guide basis:</strong> water, jellyfish, crowd, sea fog</span>'
+        : '<span><strong>데이터 상태:</strong> 예시 데이터 (공식 자료 연계 전)</span><span><strong>관측 시각:</strong> 10:30 (예시)</span><span><strong>마지막 갱신:</strong> 10:35 (예시)</span><span><strong>표시 구분:</strong> 현재 관측 / AI 예측</span><span><strong>향후 제공기관:</strong> 부산시·국립수산과학원·기상청</span><span><strong>입수 안내 기준:</strong> 수질·해파리·인파·해무</span>';
+    }
     function fogArrivalTime(b) {
       const hour = 14 + Math.min(4, Math.max(0, Math.round((90 - b.humidity) / 10)));
       const today = new Date();
@@ -298,7 +375,7 @@
     function englishLevel(level) { return { 안전: 'Safe', 주의: 'Caution', 위험: 'Danger', 낮음: 'Low', 보통: 'Medium', 높음: 'High' }[level] || level; }
     function updateInfoEnglish(b) {
       const title = document.getElementById('info-title'); const detail = document.getElementById('info-detail'); const summary = document.getElementById('info-summary');
-      const predictionBox = document.getElementById('prediction-box'); const details = []; const summaries = []; const forecasts = [];
+      const predictionBox = document.getElementById('prediction-box'); const predictionContent = document.getElementById('prediction-content'); const details = []; const summaries = []; const forecasts = [];
       title.textContent = `${beachName(b)} selected information · sample data`;
       if (currentModes.has('water')) { details.push(`<strong>Water</strong> · pH ${b.ph} · bacteria risk ${englishLevel(b.bacteria)} · ${englishLevel(b.condition)} · updated 10:30`); summaries.push(`Water: ${englishLevel(b.condition)} conditions in this sample data.`); }
       if (currentModes.has('jellyfish')) {
@@ -308,18 +385,20 @@
       }
       if (currentModes.has('crowd')) { details.push(`<strong>Crowd</strong> · ${b.crowd}% · ${b.crowd >= 75 ? 'Busy' : b.crowd >= 45 ? 'Moderate' : 'Quiet'} · updated 10:30`); summaries.push(`Crowd: ${b.crowd >= 75 ? 'The beach is busy. Set a meeting point for your group.' : 'The beach is relatively comfortable to move around.'}`); }
       if (currentModes.has('fog')) {
-        const forecast = fogForecast(b); details.push(`<strong>Sea fog</strong> · air ${b.airTemp}℃ · humidity ${b.humidity}% · wind ${b.wind}m/s · updated 10:30`);
+        const forecast = fogForecast(b); details.push(`<strong>Current sea-fog observation</strong> · air ${b.airTemp}℃ · humidity ${b.humidity}% · wind ${b.wind}m/s · observed 10:30`);
         summaries.push(`Sea fog: ${forecast.level === '위험' ? 'Fog is likely. Take extra care near the shore and at sea.' : forecast.level === '주의' ? 'Fog may form. Check local weather guidance before travelling.' : 'The chance of fog is currently low.'}`);
         forecasts.push(`<strong>AI sea-fog forecast (sample): ${forecast.chance}% · ${englishLevel(forecast.level)}</strong>`);
       }
       detail.innerHTML = details.length ? details.join('<br>') : 'Choose one or more map categories.';
-      summary.innerHTML = summaries.length ? `AI summary (sample):<br>${summaries.join('<br>')}` : '';
-      predictionBox.hidden = forecasts.length === 0; predictionBox.innerHTML = forecasts.join('<hr>');
+      summary.innerHTML = summaries.length ? `<span class="summary-label">Observation summary (sample)</span><br>${summaries.join('<br>')}` : '';
+      predictionBox.hidden = forecasts.length === 0; predictionContent.innerHTML = forecasts.join('<hr>');
     }
     function updateInfo(beach) {
       const b = beaches[beach]; const title = document.getElementById('info-title'); const detail = document.getElementById('info-detail'); const summary = document.getElementById('info-summary');
+      renderOverallSafety(b);
+      renderDataMetadata();
       if (language === 'en') { updateInfoEnglish(b); return; }
-      const predictionBox = document.getElementById('prediction-box'); const details = []; const summaries = []; const forecasts = [];
+      const predictionBox = document.getElementById('prediction-box'); const predictionContent = document.getElementById('prediction-content'); const details = []; const summaries = []; const forecasts = [];
       title.textContent = `${beachName(b)} 선택 정보 · 예시 데이터`;
       if (currentModes.has('water')) {
         details.push(`<strong>수질</strong> · pH ${b.ph} · 세균 위험 ${b.bacteria} · 안전 단계 ${b.condition} · 업데이트 10:30`);
@@ -340,7 +419,7 @@
       }
       if (currentModes.has('fog')) {
         const forecast = fogForecast(b); const reasons = [];
-        details.push(`<strong>해무</strong> · 기온 ${b.airTemp}℃ · 습도 ${b.humidity}% · 바람 ${b.wind}m/s · 업데이트 10:30`);
+        details.push(`<strong>현재 해무 관측</strong> · 기온 ${b.airTemp}℃ · 습도 ${b.humidity}% · 바람 ${b.wind}m/s · 관측 10:30`);
         summaries.push(`해무: ${forecast.level === '위험' ? '해무가 생길 가능성이 높아요. 바닷가와 해상 이동 시 시야 확보에 특히 주의해 주세요.' : forecast.level === '주의' ? '해무가 생길 수 있어요. 이동 전 현장 기상 안내를 확인해 주세요.' : '현재 해무 발생 가능성은 낮은 편이에요.'}`);
         if (b.humidity >= 80) reasons.push('습도가 높아 해무가 생기기 쉬운 조건이에요.');
         if (b.wind <= 3) reasons.push('바람이 약해 해무가 오래 머무를 수 있어요.');
@@ -348,15 +427,16 @@
         forecasts.push(`<strong>AI 해무 발생 가능성(예시): ${forecast.chance}% · ${forecast.level}</strong><ul>${reasons.map((reason) => `<li>${reason}</li>`).join('')}</ul>`);
       }
       detail.innerHTML = details.length ? details.join('<br>') : '지도에서 확인할 항목을 하나 이상 선택해 주세요.';
-      summary.innerHTML = summaries.length ? `AI 쉬운 설명(예시):<br>${summaries.join('<br>')}` : '';
+      summary.innerHTML = summaries.length ? `<span class="summary-label">관측 요약(예시)</span><br>${summaries.join('<br>')}` : '';
       predictionBox.hidden = forecasts.length === 0;
-      predictionBox.innerHTML = forecasts.join('<hr>');
+      predictionContent.innerHTML = forecasts.join('<hr>');
     }
     function drawMap() {
       clearLayers(); const shown = visibleBeaches();
       shown.forEach(([key, b]) => {
         const jellyForecast = jellyfishForecast(b);
         const jellyRisk = jellyForecast.level;
+        const beachSafety = overallSafety(b);
         if (currentModes.has('jellyfish')) {
           const jellyfishInfo = language === 'en'
             ? `<strong>${beachName(b)} jellyfish · sample</strong><br>Current sightings: ${b.jellyfish}<br>Appearance forecast: ${jellyForecast.chance}% · ${englishLevel(jellyForecast.level)}`
@@ -376,9 +456,12 @@
           const arrowTwo = [(middle[0] + b.point[0]) / 2, (middle[1] + b.point[1]) / 2];
           const arrowAngle = (from, to) => Math.atan2(-(to[0] - from[0]), to[1] - from[1]) * 180 / Math.PI;
           const arrowIcon = (angle) => L.divIcon({ className: 'fog-arrow', html: `<span style="display:block;transform:rotate(${angle}deg)">➜</span>`, iconSize: [34, 34], iconAnchor: [17, 17] });
+          const currentFogInfo = language === 'en'
+            ? `<strong>Current sea-fog observation · sample</strong><br>Observed offshore at 10:30<br>Humidity: ${b.humidity}% · wind: ${b.wind}m/s`
+            : `<strong>현재 해무 관측 · 예시</strong><br>앞바다 관측 시각 10:30<br>습도 ${b.humidity}% · 바람 ${b.wind}m/s`;
           add(L.polyline([offshore, middle, b.point], { color: '#64748b', weight: 5, opacity: .75, dashArray: '10 12' }));
-          add(L.circle(offshore, { radius: 1200, color: '#94a3b8', fillColor: '#e2e8f0', fillOpacity: .3, weight: 1 }));
-          add(L.marker(offshore).bindTooltip(language === 'en' ? 'Current sea fog' : '현재 해무', { permanent: true, direction: 'top', className: 'fog-label', offset: [0, -8] }));
+          add(L.circle(offshore, { radius: 1200, color: '#94a3b8', fillColor: '#e2e8f0', fillOpacity: .3, weight: 1 }).bindTooltip(currentFogInfo, { sticky: true, className: 'map-info-tooltip' }));
+          add(L.marker(offshore).bindTooltip(language === 'en' ? 'Current sea-fog observation' : '현재 해무 관측', { permanent: true, direction: 'top', className: 'fog-label', offset: [0, -8] }));
           add(L.marker(arrowOne, { icon: arrowIcon(arrowAngle(offshore, middle)) }));
           add(L.marker(arrowTwo, { icon: arrowIcon(arrowAngle(middle, b.point)) }));
           if (fogRisk.level === '위험') add(L.rectangle([[b.point[0] - .010, b.point[1] - .014], [b.point[0] + .010, b.point[1] + .014]], { color: '#ea580c', fillColor: '#f97316', fillOpacity: .30, weight: 3 }));
@@ -387,8 +470,9 @@
         const beachHoverInfo = language === 'en'
           ? `<strong>${beachName(b)} safety information · sample</strong><br><br><strong>Water</strong> · pH ${b.ph} · bacteria risk ${englishLevel(b.bacteria)} · ${englishLevel(b.condition)}<br><strong>Jellyfish</strong> · ${b.jellyfish} sightings · forecast ${jellyForecast.chance}% · ${englishLevel(jellyForecast.level)}${fogArrivalInfo}`
           : `<strong>${beachName(b)} 안전 정보 · 예시</strong><br><br><strong>수질</strong> · pH ${b.ph} · 세균 위험 ${b.bacteria} · ${b.condition}<br><strong>해파리</strong> · 현재 관찰 ${b.jellyfish}건 · 출몰 가능성 ${jellyForecast.chance}% · ${jellyForecast.level}${fogArrivalInfo}`;
-        const badgeColor = currentModes.has('water') ? colors[b.condition] : '#cbd5e1';
-        const beachIcon = L.divIcon({ className: 'beach-pin-icon', html: `<div class="beach-pin"><span class="water-badge" style="background:${badgeColor}"></span>${beachName(b)}</div>`, iconSize: [98, 30], iconAnchor: [49, 15] });
+        const safetySymbol = { safe: '✓', caution: '!', danger: '×', control: '–' }[beachSafety.level];
+        const waterColor = colors[b.condition];
+        const beachIcon = L.divIcon({ className: 'beach-pin-icon', html: `<div class="beach-pin"><span class="safety-symbol" style="background:#075985">${safetySymbol}</span><span class="water-badge" style="background:${waterColor}"></span>${beachName(b)}</div>`, iconSize: [128, 30], iconAnchor: [64, 15] });
         const beachMarker = L.marker(b.point, { icon: beachIcon });
         beachMarker.on('mouseover', () => L.popup({ closeButton: false, autoClose: true, closeOnClick: true, offset: [0, -12], className: 'map-info-tooltip' }).setLatLng(b.point).setContent(beachHoverInfo).openOn(safetyMap));
         beachMarker.on('mouseout', () => safetyMap.closePopup());
@@ -466,7 +550,7 @@
 
     function renderBrowserAnalysis() {
       if (!lastBrowserAnalysis) return;
-      const { isJellyfish, jellyfishProbability, finalLabel, speciesProbability } = lastBrowserAnalysis;
+      const { isJellyfish, jellyfishProbability, finalLabel, speciesProbability, similarLabel, similarProbability } = lastBrowserAnalysis;
       const isEnglish = language === 'en';
       const details = localizedSpeciesDetails(finalLabel);
       document.querySelector('.result-label').textContent = isEnglish ? 'Free browser AI · your photo stays on this device' : '무료 브라우저 AI · 사진을 외부 분석 서버에 보내지 않음';
@@ -484,6 +568,12 @@
         : (isEnglish ? `Jellyfish probability: <strong>${jellyfishProbability}%</strong><br>Below 50%, so it is not classified as a jellyfish.` : `해파리일 확률: <strong>${jellyfishProbability}%</strong><br>50% 미만이므로 해파리로 판독하지 않아요.`);
       document.getElementById('species-feature').textContent = details.feature;
       document.getElementById('species-safety').textContent = details.safety;
+      const uncertaintyBox = document.getElementById('uncertainty-box');
+      const similarDetails = similarLabel ? localizedSpeciesDetails(similarLabel) : null;
+      const retakeRecommended = isJellyfish && (jellyfishProbability < 70 || speciesProbability < 55);
+      uncertaintyBox.innerHTML = isEnglish
+        ? `<strong>AI result notice</strong><p>This is a photo-based reference result, not a confirmed identification. Do not touch unfamiliar marine life.</p>${isJellyfish && similarDetails ? `<p><strong>Similar candidate:</strong> ${similarDetails.name} (${similarProbability}%)</p>` : ''}<p><strong>Photo guidance:</strong> ${retakeRecommended ? 'The score is limited. Retake a clear, well-lit photo with the whole animal visible.' : 'For a more reliable check, take a clear, well-lit photo with the whole animal visible.'}</p>`
+        : `<strong>AI 결과 참고 안내</strong><p>사진을 바탕으로 한 참고 결과이며, 현장 확인을 대신할 수 없습니다. 낯선 바다 생물은 만지지 마세요.</p>${isJellyfish && similarDetails ? `<p><strong>비슷한 후보:</strong> ${similarDetails.name} (${similarProbability}%)</p>` : ''}<p><strong>사진 안내:</strong> ${retakeRecommended ? '판독 확률이 낮은 편이에요. 밝은 곳에서 대상 전체가 보이도록 다시 촬영해 주세요.' : '더 정확한 확인을 위해 밝은 곳에서 대상 전체가 보이도록 촬영해 주세요.'}</p>`;
       document.getElementById('model-status').textContent = isJellyfish
         ? (isEnglish ? 'Check complete. A photo cannot confirm safety, so also follow local guidance.' : '판독을 마쳤어요. 사진만으로 안전을 확정할 수 없으니 현장 안내도 확인해 주세요.')
         : (isEnglish ? 'Check complete. Do not touch unfamiliar marine life; ask a lifeguard if unsure.' : '판독을 마쳤어요. 바다 생물은 만지지 말고 현장 안전요원에게 확인해 주세요.');
@@ -520,16 +610,23 @@
 
         let finalLabel = 'other';
         let speciesProbability = 0;
+        let similarLabel = null;
+        let similarProbability = 0;
         if (isJellyfish) {
           const species = await classifier(image.src, [
             'a moon jellyfish',
             'a Nomura jellyfish',
             'a ghost jellyfish'
           ]);
-          const speciesTop = highestResult(species);
-          finalLabel = speciesTop.label === 'a moon jellyfish' ? 'moon'
-            : speciesTop.label === 'a Nomura jellyfish' ? 'nomura' : 'ghost';
+          const rankedSpecies = [...species].sort((first, second) => second.score - first.score);
+          const speciesTop = rankedSpecies[0];
+          const similarTop = rankedSpecies[1];
+          const speciesLabel = (item) => item.label === 'a moon jellyfish' ? 'moon'
+            : item.label === 'a Nomura jellyfish' ? 'nomura' : 'ghost';
+          finalLabel = speciesLabel(speciesTop);
           speciesProbability = Math.round(speciesTop.score * 100);
+          similarLabel = similarTop ? speciesLabel(similarTop) : null;
+          similarProbability = similarTop ? Math.round(similarTop.score * 100) : 0;
         }
 
         const details = localizedSpeciesDetails(finalLabel);
@@ -545,7 +642,7 @@
         status.textContent = isJellyfish
           ? (isEnglish ? 'Check complete. A photo cannot confirm safety, so also follow local guidance.' : '판독을 마쳤어요. 사진만으로 안전을 확정할 수 없으니 현장 안내도 확인해 주세요.')
           : (isEnglish ? 'Check complete. Do not touch unfamiliar marine life; ask a lifeguard if unsure.' : '판독을 마쳤어요. 바다 생물은 만지지 말고 현장 안전요원에게 확인해 주세요.');
-        lastBrowserAnalysis = { isJellyfish, jellyfishProbability, finalLabel, speciesProbability };
+        lastBrowserAnalysis = { isJellyfish, jellyfishProbability, finalLabel, speciesProbability, similarLabel, similarProbability };
         renderBrowserAnalysis();
       } catch (error) {
         console.error(error);
