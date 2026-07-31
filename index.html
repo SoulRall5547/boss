@@ -16,8 +16,8 @@
     h1 { margin: 0; font-size: clamp(2rem, 8vw, 4.4rem); line-height: 1.05; }
     .boss { color: var(--blue); }
     .subtitle { margin: 14px auto 28px; font-size: clamp(1rem, 3.8vw, 1.3rem); line-height: 1.55; }
-    .map-preview { height: clamp(360px, 48vw, 470px); overflow: hidden; border: 3px solid var(--ink); border-radius: 26px; background: #a8d8ec; box-shadow: 8px 8px 0 var(--ink); }
-    .map-preview iframe { width: 100%; height: 100%; display: block; border: 0; pointer-events: none; }
+    .map-preview { width: clamp(230px, 30vw, 315px); margin: 0 auto; background: transparent; }
+    .map-preview img { width: 100%; height: auto; display: block; }
     .map-label { margin: 18px 0; font-size: 0.9rem; font-weight: 700; }
     .choice-buttons { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
     .choice { min-height: 98px; padding: 16px; border: 3px solid var(--ink); border-radius: 20px; background: var(--white); font-size: clamp(1rem, 3.8vw, 1.25rem); font-weight: 800; box-shadow: 5px 5px 0 var(--ink); transition: transform .15s, box-shadow .15s; }
@@ -94,7 +94,7 @@
     .beach-pin { display: flex; align-items: center; gap: 6px; width: max-content; padding: 5px 8px; border: 2px solid var(--ink); border-radius: 12px; background: #fff; color: var(--ink); font-family: inherit; font-size: .78rem; font-weight: 800; white-space: nowrap; box-shadow: 2px 2px 0 var(--ink); }
     .water-badge { width: 12px; height: 12px; border: 1.5px solid var(--ink); border-radius: 50%; flex: 0 0 auto; }
     .feature-intro small { display: block; margin-top: 10px; color: #334155; }
-    @media (max-width: 650px) { .screen { padding: 20px 16px 32px; } .map-preview { height: 280px; } .choice-buttons { grid-template-columns: 1fr; } .map-header { align-items: flex-start; flex-direction: column; } .map-controls { justify-content: flex-start; width: 100%; } #beach-select { max-width: 100%; flex: 1; } #safety-map { min-height: 420px; } .result-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 650px) { .screen { padding: 20px 16px 32px; } main > .language-switch { margin: 8px 12px 0 auto; } .language-switch button { min-height: 28px; padding: 4px 8px; font-size: .72rem; } .map-preview { width: min(78vw, 275px); } .choice-buttons { grid-template-columns: 1fr; } .map-header { align-items: flex-start; flex-direction: column; } .map-controls { justify-content: flex-start; width: 100%; } #beach-select { max-width: 100%; flex: 1; } #safety-map { min-height: 420px; } .result-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -108,8 +108,8 @@
         <p class="eyebrow" data-i18n="homeEyebrow">부산 바다 안전 안내</p>
         <h1 id="home-title"><span class="boss">BOSS</span></h1>
         <p class="subtitle">Busan Ocean Safety System</p>
-        <div class="map-preview" aria-label="OpenStreetMap 기반 부산 정적 지도 이미지">
-          <iframe title="OpenStreetMap 기반 부산 지도 이미지" tabindex="-1" src="https://www.openstreetmap.org/export/embed.html?bbox=128.97%2C35.06%2C129.26%2C35.31&amp;layer=mapnik"></iframe>
+        <div class="map-preview" aria-label="부산을 소개하는 서비스 이미지">
+          <img src="assets/home-busan-map.png" alt="부산 지역을 나타낸 일러스트 지도">
         </div>
         <p class="map-label" data-i18n="mapLabel">OpenStreetMap 기반 부산 지도</p>
         <section class="feature-intro" aria-labelledby="feature-intro-title">
@@ -213,7 +213,7 @@
   <script>
     const translations = {
       ko: {
-        homeEyebrow: '부산 바다 안전 안내', mapLabel: 'OpenStreetMap 기반 부산 지도', featureTitle: 'BOSS에서 할 수 있는 일',
+        homeEyebrow: '부산 바다 안전 안내', mapLabel: '대한민국 해양 안전 안내 이미지', featureTitle: 'BOSS에서 할 수 있는 일',
         featureOne: '<span class="feature-icon" aria-hidden="true">1</span>수질·인파 안전 지도', featureTwo: '<span class="feature-icon" aria-hidden="true">2</span>해파리 출몰 가능성', featureThree: '<span class="feature-icon" aria-hidden="true">3</span>해무 위치·이동 경로', featureFour: '<span class="feature-icon" aria-hidden="true">4</span>사진으로 해파리 판독',
         exampleNote: '지도 정보는 현재 예시 데이터로 표시됩니다.', smartMap: '스마트 맵<span>수질 · 해파리 · 인파 · 해무 확인</span>', smartLens: '스마트 렌즈<span>해파리 사진으로 종 알아보기</span>',
         backHome: '← 처음 화면', mapTitle: '부산 해수욕장 안전 지도', water: '수질', jellyfish: '해파리', crowd: '인파', fog: '해무', allBeaches: '전체 해수욕장',
@@ -221,7 +221,7 @@
         lensTitle: '스마트 렌즈', lensDescription: '해파리 사진을 찍거나 업로드하면 AI 분석 결과 화면으로 이동합니다.', uploadTitle: '해파리 사진을 올려 주세요', uploadDescription: '휴대폰에서는 카메라를 열 수 있고,<br>노트북에서는 사진 파일을 선택할 수 있어요.', takePhoto: '사진 촬영하기', uploadPhoto: '앨범에서 업로드', privacyNote: '사진은 이 기기에서만 미리보기로 사용됩니다.', backPhoto: '← 사진 다시 선택', resultTitle: 'AI 분석 결과', stepOne: '1단계 · 해파리 여부', speciesHeading: '판단한 종류', riskHeading: '독성 강도(위험도)', scoreHeading: '사진 유사도', featureHeading: '특징', safetyHeading: '안전 안내'
       },
       en: {
-        homeEyebrow: 'Busan Ocean Safety Guide', mapLabel: 'Busan map powered by OpenStreetMap', featureTitle: 'What BOSS can do',
+        homeEyebrow: 'Busan Ocean Safety Guide', mapLabel: 'Korea marine safety guide image', featureTitle: 'What BOSS can do',
         featureOne: '<span class="feature-icon" aria-hidden="true">1</span>Water quality & crowd safety map', featureTwo: '<span class="feature-icon" aria-hidden="true">2</span>Jellyfish appearance forecast', featureThree: '<span class="feature-icon" aria-hidden="true">3</span>Sea fog location & route', featureFour: '<span class="feature-icon" aria-hidden="true">4</span>Jellyfish photo check',
         exampleNote: 'Map information is currently sample data.', smartMap: 'Smart Map<span>Water · Jellyfish · Crowd · Sea fog</span>', smartLens: 'Smart Lens<span>Check jellyfish species from a photo</span>',
         backHome: '← Home', mapTitle: 'Busan Beach Safety Map', water: 'Water', jellyfish: 'Jellyfish', crowd: 'Crowd', fog: 'Sea fog', allBeaches: 'All beaches',
