@@ -393,7 +393,15 @@
         const beachMarker = L.marker(b.point, { icon: beachIcon });
         beachMarker.on('mouseover', () => L.popup({ closeButton: false, autoClose: true, closeOnClick: true, offset: [0, -12], className: 'map-info-tooltip' }).setLatLng(b.point).setContent(beachHoverInfo).openOn(safetyMap));
         beachMarker.on('mouseout', () => safetyMap.closePopup());
-        beachMarker.on('click', () => { safetyMap.closePopup(); selectedBeach = key; document.getElementById('beach-select').value = key; drawMap(); safetyMap.setView(b.point, 14); updateInfo(key); });
+        beachMarker.on('click', () => {
+          safetyMap.closePopup();
+          selectedBeach = key;
+          document.getElementById('beach-select').value = key;
+          drawMap();
+          safetyMap.setView(b.point, 14);
+          updateInfo(key);
+          L.popup({ closeButton: true, autoClose: true, closeOnClick: true, offset: [0, -12], className: 'map-info-tooltip' }).setLatLng(b.point).setContent(beachHoverInfo).openOn(safetyMap);
+        });
         add(beachMarker);
       });
       const defaultBeach = selectedBeach === 'all' ? 'haeundae' : selectedBeach; updateInfo(defaultBeach);
