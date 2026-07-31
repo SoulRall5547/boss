@@ -230,6 +230,7 @@
       }
     };
     let language = localStorage.getItem('boss-language') || 'ko';
+    let lastBrowserAnalysis = null;
     function applyLanguage(nextLanguage) {
       language = nextLanguage;
       document.documentElement.lang = language;
@@ -239,6 +240,7 @@
       document.querySelectorAll('[data-name-ko]').forEach((option) => { option.textContent = option.dataset[`name${language === 'en' ? 'En' : 'Ko'}`]; });
       document.querySelectorAll('[data-language]').forEach((button) => button.classList.toggle('active', button.dataset.language === language));
       if (typeof drawMap === 'function' && safetyMap) drawMap();
+      if (lastBrowserAnalysis) renderBrowserAnalysis();
     }
     document.querySelectorAll('[data-language]').forEach((button) => button.addEventListener('click', () => applyLanguage(button.dataset.language)));
 
@@ -376,7 +378,7 @@
           const arrowIcon = (angle) => L.divIcon({ className: 'fog-arrow', html: `<span style="display:block;transform:rotate(${angle}deg)">➜</span>`, iconSize: [34, 34], iconAnchor: [17, 17] });
           add(L.polyline([offshore, middle, b.point], { color: '#64748b', weight: 5, opacity: .75, dashArray: '10 12' }));
           add(L.circle(offshore, { radius: 1200, color: '#94a3b8', fillColor: '#e2e8f0', fillOpacity: .3, weight: 1 }));
-          add(L.marker(offshore).bindTooltip('현재 해무', { permanent: true, direction: 'top', className: 'fog-label', offset: [0, -8] }));
+          add(L.marker(offshore).bindTooltip(language === 'en' ? 'Current sea fog' : '현재 해무', { permanent: true, direction: 'top', className: 'fog-label', offset: [0, -8] }));
           add(L.marker(arrowOne, { icon: arrowIcon(arrowAngle(offshore, middle)) }));
           add(L.marker(arrowTwo, { icon: arrowIcon(arrowAngle(middle, b.point)) }));
           if (fogRisk.level === '위험') add(L.rectangle([[b.point[0] - .010, b.point[1] - .014], [b.point[0] + .010, b.point[1] + .014]], { color: '#ea580c', fillColor: '#f97316', fillOpacity: .30, weight: 3 }));
@@ -462,6 +464,32 @@
       return englishDetails[label];
     }
 
+    function renderBrowserAnalysis() {
+      if (!lastBrowserAnalysis) return;
+      const { isJellyfish, jellyfishProbability, finalLabel, speciesProbability } = lastBrowserAnalysis;
+      const isEnglish = language === 'en';
+      const details = localizedSpeciesDetails(finalLabel);
+      document.querySelector('.result-label').textContent = isEnglish ? 'Free browser AI · your photo stays on this device' : '무료 브라우저 AI · 사진을 외부 분석 서버에 보내지 않음';
+      document.getElementById('presence-result').textContent = isJellyfish
+        ? (isEnglish ? `Likely a jellyfish · ${jellyfishProbability}%` : `해파리로 판단 · 확률 ${jellyfishProbability}%`)
+        : (isEnglish ? `Probably not a jellyfish · jellyfish probability ${jellyfishProbability}%` : `해파리가 아닐 가능성이 높음 · 해파리일 확률 ${jellyfishProbability}%`);
+      document.getElementById('species-name').previousElementSibling.textContent = isEnglish ? 'Step 2 · Most likely species' : '2단계 · 가장 가능성 높은 종류';
+      document.getElementById('species-score').previousElementSibling.textContent = isEnglish ? 'Prediction scores' : '판독 확률';
+      document.getElementById('species-name').textContent = isJellyfish
+        ? `${details.name} · ${isEnglish ? 'highest-scoring result' : '가장 높은 판독 결과'}`
+        : (isEnglish ? 'Probably not a jellyfish' : '해파리가 아닐 가능성이 가장 높아요');
+      document.getElementById('species-risk').textContent = details.risk;
+      document.getElementById('species-score').innerHTML = isJellyfish
+        ? (isEnglish ? `Step 1 jellyfish probability: <strong>${jellyfishProbability}%</strong><br>Step 2 ${details.name} probability: <strong>${speciesProbability}%</strong>` : `1단계 해파리일 확률: <strong>${jellyfishProbability}%</strong><br>2단계 ${details.name}일 확률: <strong>${speciesProbability}%</strong>`)
+        : (isEnglish ? `Jellyfish probability: <strong>${jellyfishProbability}%</strong><br>Below 50%, so it is not classified as a jellyfish.` : `해파리일 확률: <strong>${jellyfishProbability}%</strong><br>50% 미만이므로 해파리로 판독하지 않아요.`);
+      document.getElementById('species-feature').textContent = details.feature;
+      document.getElementById('species-safety').textContent = details.safety;
+      document.getElementById('model-status').textContent = isJellyfish
+        ? (isEnglish ? 'Check complete. A photo cannot confirm safety, so also follow local guidance.' : '판독을 마쳤어요. 사진만으로 안전을 확정할 수 없으니 현장 안내도 확인해 주세요.')
+        : (isEnglish ? 'Check complete. Do not touch unfamiliar marine life; ask a lifeguard if unsure.' : '판독을 마쳤어요. 바다 생물은 만지지 말고 현장 안전요원에게 확인해 주세요.');
+      document.getElementById('species-result').hidden = false;
+    }
+
     async function analyzeWithBrowserAi(image) {
       const status = document.getElementById('model-status');
       const result = document.getElementById('species-result');
@@ -517,7 +545,8 @@
         status.textContent = isJellyfish
           ? (isEnglish ? 'Check complete. A photo cannot confirm safety, so also follow local guidance.' : '판독을 마쳤어요. 사진만으로 안전을 확정할 수 없으니 현장 안내도 확인해 주세요.')
           : (isEnglish ? 'Check complete. Do not touch unfamiliar marine life; ask a lifeguard if unsure.' : '판독을 마쳤어요. 바다 생물은 만지지 말고 현장 안전요원에게 확인해 주세요.');
-        result.hidden = false;
+        lastBrowserAnalysis = { isJellyfish, jellyfishProbability, finalLabel, speciesProbability };
+        renderBrowserAnalysis();
       } catch (error) {
         console.error(error);
         const reason = error?.message ? ` (${error.message.slice(0, 90)})` : '';
