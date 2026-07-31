@@ -104,6 +104,7 @@
     .uncertainty-box { margin-top: 14px; padding: 14px; border: 2px solid #7c3aed; border-radius: 14px; background: #f5f3ff; }
     .uncertainty-box strong { color: #5b21b6; }
     .uncertainty-box p { margin-top: 7px; }
+    .report-link { display: inline-flex; min-height: 40px; margin-top: 8px; padding: 8px 12px; align-items: center; border: 2px solid var(--ink); border-radius: 10px; background: #fff; color: #075985; font-weight: 900; text-decoration: none; }
     .feature-intro { margin: 18px 0; padding: 16px; border: 2px solid var(--ink); border-radius: 16px; background: rgba(255,255,255,.82); text-align: left; }
     .feature-intro h2 { margin: 0 0 10px; font-size: 1.1rem; }
     .feature-intro ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
@@ -356,8 +357,8 @@
       actionGuidance.hidden = !needsUrgentAction;
       if (needsUrgentAction) {
         actionGuidance.innerHTML = isEnglish
-          ? '<strong>Risk action guide</strong><p>Do not enter the water. Tell a nearby lifeguard about the location and follow official instructions.</p><div class="action-buttons"><span class="action-step">Tell a lifeguard</span><a href="tel:119">Call 119 for an emergency</a><a href="https://www.nifs.go.kr/portal/pcon0000066/systA/actionConts.do" target="_blank" rel="noreferrer">Jellyfish report & first aid</a></div><p><small>If stung, leave the water. Use seawater or saline to remove tentacles; do not use tap water. Seek emergency help for breathing difficulty or loss of consciousness.</small></p>'
-          : '<strong>위험 행동 안내</strong><p>입수하지 말고, 가까운 안전요원에게 위치를 알린 뒤 현장 안내를 따라 주세요.</p><div class="action-buttons"><span class="action-step">안전요원에게 알리기</span><a href="tel:119">응급 상황 시 119 신고</a><a href="https://www.nifs.go.kr/portal/pcon0000066/systA/actionConts.do" target="_blank" rel="noreferrer">해파리 신고·응급 안내</a></div><p><small>해파리에 쏘이면 물 밖으로 나온 뒤 바닷물 또는 생리식염수로 촉수를 제거하세요. 수돗물은 사용하지 말고, 호흡 곤란·의식 이상 시 즉시 119에 도움을 요청하세요.</small></p>';
+          ? '<strong>Risk action guide</strong><p>Do not enter the water. Tell a nearby lifeguard about the location and follow official instructions.</p><p><small>If stung, leave the water. Use seawater or saline to remove tentacles; do not use tap water. Seek emergency help for breathing difficulty or loss of consciousness.</small></p>'
+          : '<strong>위험 행동 안내</strong><p>입수하지 말고, 가까운 안전요원에게 위치를 알린 뒤 현장 안내를 따라 주세요.</p><p><small>해파리에 쏘이면 물 밖으로 나온 뒤 바닷물 또는 생리식염수로 촉수를 제거하세요. 수돗물은 사용하지 말고, 호흡 곤란·의식 이상 시 즉시 119에 도움을 요청하세요.</small></p>';
       }
       return safety;
     }
@@ -571,9 +572,14 @@
       const uncertaintyBox = document.getElementById('uncertainty-box');
       const similarDetails = similarLabel ? localizedSpeciesDetails(similarLabel) : null;
       const retakeRecommended = isJellyfish && (jellyfishProbability < 70 || speciesProbability < 55);
+      const reportLink = isJellyfish
+        ? (isEnglish
+          ? '<a class="report-link" href="https://www.nifs.go.kr/portal/me/jelyB/actionJelyFormWrite.do" target="_blank" rel="noreferrer">Report jellyfish sighting (official)</a><p><small>Your photo and location are not sent automatically. Enter them directly on the official page if you choose to report.</small></p>'
+          : '<a class="report-link" href="https://www.nifs.go.kr/portal/me/jelyB/actionJelyFormWrite.do" target="_blank" rel="noreferrer">해파리 신고하기 (공식)</a><p><small>사진과 위치는 자동 전송되지 않습니다. 신고를 원하면 공식 페이지에서 직접 입력해 주세요.</small></p>')
+        : '';
       uncertaintyBox.innerHTML = isEnglish
-        ? `<strong>AI result notice</strong><p>This is a photo-based reference result, not a confirmed identification. Do not touch unfamiliar marine life.</p>${isJellyfish && similarDetails ? `<p><strong>Similar candidate:</strong> ${similarDetails.name} (${similarProbability}%)</p>` : ''}<p><strong>Photo guidance:</strong> ${retakeRecommended ? 'The score is limited. Retake a clear, well-lit photo with the whole animal visible.' : 'For a more reliable check, take a clear, well-lit photo with the whole animal visible.'}</p>`
-        : `<strong>AI 결과 참고 안내</strong><p>사진을 바탕으로 한 참고 결과이며, 현장 확인을 대신할 수 없습니다. 낯선 바다 생물은 만지지 마세요.</p>${isJellyfish && similarDetails ? `<p><strong>비슷한 후보:</strong> ${similarDetails.name} (${similarProbability}%)</p>` : ''}<p><strong>사진 안내:</strong> ${retakeRecommended ? '판독 확률이 낮은 편이에요. 밝은 곳에서 대상 전체가 보이도록 다시 촬영해 주세요.' : '더 정확한 확인을 위해 밝은 곳에서 대상 전체가 보이도록 촬영해 주세요.'}</p>`;
+        ? `<strong>AI result notice</strong><p>This is a photo-based reference result, not a confirmed identification. Do not touch unfamiliar marine life.</p>${isJellyfish && similarDetails ? `<p><strong>Similar candidate:</strong> ${similarDetails.name} (${similarProbability}%)</p>` : ''}<p><strong>Photo guidance:</strong> ${retakeRecommended ? 'The score is limited. Retake a clear, well-lit photo with the whole animal visible.' : 'For a more reliable check, take a clear, well-lit photo with the whole animal visible.'}</p>${reportLink}`
+        : `<strong>AI 결과 참고 안내</strong><p>사진을 바탕으로 한 참고 결과이며, 현장 확인을 대신할 수 없습니다. 낯선 바다 생물은 만지지 마세요.</p>${isJellyfish && similarDetails ? `<p><strong>비슷한 후보:</strong> ${similarDetails.name} (${similarProbability}%)</p>` : ''}<p><strong>사진 안내:</strong> ${retakeRecommended ? '판독 확률이 낮은 편이에요. 밝은 곳에서 대상 전체가 보이도록 다시 촬영해 주세요.' : '더 정확한 확인을 위해 밝은 곳에서 대상 전체가 보이도록 촬영해 주세요.'}</p>${reportLink}`;
       document.getElementById('model-status').textContent = isJellyfish
         ? (isEnglish ? 'Check complete. A photo cannot confirm safety, so also follow local guidance.' : '판독을 마쳤어요. 사진만으로 안전을 확정할 수 없으니 현장 안내도 확인해 주세요.')
         : (isEnglish ? 'Check complete. Do not touch unfamiliar marine life; ask a lifeguard if unsure.' : '판독을 마쳤어요. 바다 생물은 만지지 말고 현장 안전요원에게 확인해 주세요.');
